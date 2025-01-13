@@ -6,6 +6,5 @@ pipeline {
                 sh './gradle clean build'
             }
         }
-
     }
 }
