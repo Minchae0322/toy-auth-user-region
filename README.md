@@ -1,3 +1,6 @@
+##jenkins webhook trigger : branch main 이 업데이트 될 때
+
+
 ### Ubuntu Jenkins 설치
 
 `curl -fsSL https://pkg.jenkins.io/debian/jenkins.io-2023.key | sudo tee \
