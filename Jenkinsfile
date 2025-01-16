@@ -9,8 +9,8 @@ pipeline {
                 script {
                     // 빌드 버전 정보 생성
                     def commitHash = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'manual'
-                    BUILD_VERSION = "${BUILD_NUMBER}-${commitHash}"
-                    echo "Current Build Version: ${BUILD_VERSION}"
+                    env.BUILD_VERSION = "${BUILD_NUMBER}-${commitHash}"
+                    echo "Current Build Version: ${env.BUILD_VERSION}"
                 }
             }
         }
@@ -37,7 +37,7 @@ pipeline {
         }
         success {
             script {
-                echo "Build succeeded with version: ${BUILD_VERSION}"
+                echo "Build succeeded with version: ${env.BUILD_VERSION}"
                 // 빌드 결과물 저장
                 sh '''
                 mkdir -p ${BACKUP_DIR}/${BUILD_VERSION}
