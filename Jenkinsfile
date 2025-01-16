@@ -3,20 +3,17 @@ pipeline {
     environment {
         BACKUP_DIR = "/backup/jenkins_builds/${JOB_NAME}" // 백업 기본 디렉토리
         PREVIOUS_VERSION_FILE = "/backup/jenkins_builds/${JOB_NAME}/last_build_version.txt" // 이전 빌드 기록 파일
+        DOCKER_IMAGE = "auth-image:${BUILD_NUMBER}" // Docker 이미지 태그
     }
     stages {
         stage('Prepare Version') {
             steps {
                 script {
-                    // 날짜 및 시간 형식 지정 (예: 20250116-035324)
                     def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('UTC'))
-                    
-                    // 빌드 버전 정보 생성
                     def commitHash = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'manual'
                     env.BUILD_VERSION = "${BUILD_NUMBER}-${commitHash}-${timestamp}"
                     echo "Current Build Version: ${env.BUILD_VERSION}"
-                    
-                    // 이전 빌드 버전 읽기
+
                     if (fileExists(env.PREVIOUS_VERSION_FILE)) {
                         env.PREVIOUS_BUILD_VERSION = readFile(env.PREVIOUS_VERSION_FILE).trim()
                         echo "Previous Build Version: ${env.PREVIOUS_BUILD_VERSION}"
@@ -32,11 +29,32 @@ pipeline {
                 sh './gradlew clean build'
             }
         }
+        stage('Docker Build') {
+            steps {
+                script {
+                    // Build Docker image using the JAR file
+                    sh '''
+                    docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=build/libs/*.jar .
+                    '''
+                }
+            }
+        }
+        stage('Docker Run') {
+            steps {
+                script {
+                    // Stop and remove existing container if it exists
+                    sh '''
+                    docker stop myapp || true
+                    docker rm myapp || true
+                    docker run -d --name auth-container -p 8081:8081 ${DOCKER_IMAGE}
+                    '''
+                }
+            }
+        }
     }
     post {
         failure {
             script {
-                // 빌드 실패 시 이전 빌드 복구
                 if (env.PREVIOUS_BUILD_VERSION) {
                     echo "Restoring previous build version: ${env.PREVIOUS_BUILD_VERSION}"
                     sh '''
@@ -55,9 +73,7 @@ pipeline {
         success {
             script {
                 echo "Build succeeded with version: ${env.BUILD_VERSION}"
-                // 빌드 결과물 저장
                 sh '''
-                # 현재 빌드 결과물 저장
                 mkdir -p ${BACKUP_DIR}/${BUILD_VERSION}
                 cp build/libs/*.jar ${BACKUP_DIR}/${BUILD_VERSION}/
                 echo "${BUILD_VERSION}" > ${PREVIOUS_VERSION_FILE}
