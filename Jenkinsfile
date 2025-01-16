@@ -7,10 +7,12 @@ pipeline {
         stage('Prepare Version') {
             steps {
                 script {
+                      // 날짜 및 시간 형식 지정 (예: 20250114-153000)
+                    def timestamp = new Date().format("yyyyMMdd-HHmmss", TimeZone.getTimeZone('UTC'))
                     // 빌드 버전 정보 생성
                     def commitHash = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'manual'
                     env.BUILD_VERSION = "${BUILD_NUMBER}-${commitHash}"
-                    echo "Current Build Version: ${env.BUILD_VERSION}"
+                    echo "Current Build Version: ${env.BUILD_VERSION}-${timestamp}"
                 }
             }
         }
