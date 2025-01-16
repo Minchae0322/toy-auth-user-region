@@ -44,8 +44,8 @@ pipeline {
                 script {
                     // Stop and remove existing container if it exists
                     sh '''
-                    docker stop myapp || true
-                    docker rm myapp || true
+                    docker stop auth-container || true
+                    docker rm uth-container || true
                     docker run -d --name auth-container -p 8081:8081 ${DOCKER_IMAGE}
                     '''
                 }
