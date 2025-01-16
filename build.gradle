@@ -29,15 +29,28 @@ ext {
 }
 
 dependencies {
+
+    /*implementation 'org.springframework.boot:spring-boot-starter-data-jdbc'
+   implementation 'org.springframework.boot:spring-boot-starter-data-jpa'*/
+
+/*    implementation 'org.springframework.boot:spring-boot-starter-security'*/
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-web-services'
     compileOnly 'org.projectlombok:lombok'
-    developmentOnly 'org.springframework.boot:spring-boot-devtools'
     runtimeOnly 'com.mysql:mysql-connector-j'
     annotationProcessor 'org.projectlombok:lombok'
     testImplementation 'org.springframework.boot:spring-boot-starter-test'
     testImplementation 'org.springframework.restdocs:spring-restdocs-mockmvc'
+    /* testImplementation 'org.springframework.security:spring-security-test'*/
     testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+
+    //swagger
+    implementation 'org.springdoc:springdoc-openapi-starter-webmvc-ui:2.2.0'
+
+    //redis
+    implementation 'org.springframework.boot:spring-boot-starter-data-redis'
+    implementation 'org.springframework.boot:spring-boot-starter-logging' // 로깅 (선택 사항)
+
 }
 
 tasks.named('test') {
