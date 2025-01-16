@@ -2,12 +2,14 @@ pipeline {
     agent any
     environment {
         BACKUP_DIR = "/backup/jenkins_builds/${JOB_NAME}" // 백업 기본 디렉토리
-        BUILD_VERSION = "${BUILD_NUMBER}-${env.GIT_COMMIT?.take(7) ?: 'manual'}" // 버전 정보
+    }
     stages {
         stage('Prepare Version') {
             steps {
                 script {
-                    // 버전 정보를 출력
+                    // 빌드 버전 정보 생성
+                    def commitHash = env.GIT_COMMIT ? env.GIT_COMMIT.take(7) : 'manual'
+                    BUILD_VERSION = "${BUILD_NUMBER}-${commitHash}"
                     echo "Current Build Version: ${BUILD_VERSION}"
                 }
             }
@@ -34,16 +36,15 @@ pipeline {
             }
         }
         success {
-            echo "Build succeeded with version: ${BUILD_VERSION}"
             script {
-                    sh '''
-                    # 빌드 결과물 저장
-                    mkdir -p ${BACKUP_DIR}/${BUILD_VERSION}
-                    cp build/libs/*.jar ${BACKUP_DIR}/${BUILD_VERSION}/
-                    echo "Current build artifacts saved with version: ${BUILD_VERSION}"
-                    '''
-                }
+                echo "Build succeeded with version: ${BUILD_VERSION}"
+                // 빌드 결과물 저장
+                sh '''
+                mkdir -p ${BACKUP_DIR}/${BUILD_VERSION}
+                cp build/libs/*.jar ${BACKUP_DIR}/${BUILD_VERSION}/
+                echo "Current build artifacts saved with version: ${BUILD_VERSION}"
+                '''
+            }
         }
-    }
     }
 }
