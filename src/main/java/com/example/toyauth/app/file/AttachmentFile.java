@@ -1,6 +1,6 @@
 package com.example.toyauth.app.file;
 
-import com.example.toyauth.app.core.enumuration.FileCode;
+import com.example.toyauth.app.common.enumuration.FileCode;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -9,7 +9,6 @@ import lombok.experimental.SuperBuilder;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 @Getter
 @SuperBuilder

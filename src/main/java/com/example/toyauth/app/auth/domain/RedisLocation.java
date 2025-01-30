@@ -1,6 +1,6 @@
-package com.example.toyauth.app.domain;
+package com.example.toyauth.app.auth.domain;
 
-import com.example.toyauth.app.dto.KakaoSearchLocationResponse;
+import com.example.toyauth.app.auth.domain.dto.KakaoSearchLocationResponse;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;

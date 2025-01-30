@@ -1,4 +1,4 @@
-package com.example.toyauth.app.core.config;
+package com.example.toyauth.app.common.config;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;

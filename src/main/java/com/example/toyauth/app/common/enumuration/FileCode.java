@@ -1,4 +1,4 @@
-package com.example.toyauth.app.core.enumuration;
+package com.example.toyauth.app.common.enumuration;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

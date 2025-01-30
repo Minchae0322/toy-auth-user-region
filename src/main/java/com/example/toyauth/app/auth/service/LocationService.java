@@ -1,7 +1,7 @@
-package com.example.toyauth.app.service;
+package com.example.toyauth.app.auth.service;
 
 
-import com.example.toyauth.app.dto.KakaoSearchLocationResponse;
+import com.example.toyauth.app.auth.domain.dto.KakaoSearchLocationResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;

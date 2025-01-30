@@ -1,4 +1,4 @@
-package com.example.toyauth.app.service;
+package com.example.toyauth.app.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;

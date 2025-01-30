@@ -1,11 +1,10 @@
-package com.example.toyauth.app.core.util;
+package com.example.toyauth.app.common.util;
 
-import com.example.toyauth.app.core.dto.JwtDto;
+import com.example.toyauth.app.common.dto.JwtDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;

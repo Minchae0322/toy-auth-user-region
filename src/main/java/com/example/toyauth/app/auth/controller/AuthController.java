@@ -1,6 +1,6 @@
-package com.example.toyauth.app.controller;
+package com.example.toyauth.app.auth.controller;
 
-import com.example.toyauth.app.service.AuthService;
+import com.example.toyauth.app.auth.service.AuthService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.RestController;
 

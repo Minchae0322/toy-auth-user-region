@@ -1,4 +1,4 @@
-package com.example.toyauth.app.dto;
+package com.example.toyauth.app.auth.domain.dto;
 
 
 import java.util.List;

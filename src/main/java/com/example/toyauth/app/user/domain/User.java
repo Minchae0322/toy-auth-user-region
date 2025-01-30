@@ -1,6 +1,6 @@
 package com.example.toyauth.app.user.domain;
 
-import com.example.toyauth.app.core.enumuration.Role;
+import com.example.toyauth.app.common.enumuration.Role;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -59,9 +59,12 @@ public class User {
     @Comment("계정 정보 수정일")
     private LocalDateTime updatedAt;
 
-    @JoinColumn(name = "profile_img")
-    @OneToMany
-    private List<UserAttachmentFile> profileImg;
+    @Column(name = "profile_img_id")
+    @Comment("사용자 프로필 이미지 첨부파일 아이디")
+    private Long profileImgId;
+
+    @OneToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    private List<UserRegion> userRegions;
 
     @PrePersist
     protected void onCreate() {

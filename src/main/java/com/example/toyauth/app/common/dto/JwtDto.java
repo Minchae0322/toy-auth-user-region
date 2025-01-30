@@ -1,4 +1,4 @@
-package com.example.toyauth.app.core.dto;
+package com.example.toyauth.app.common.dto;
 
 import lombok.Builder;
 import lombok.Getter;
