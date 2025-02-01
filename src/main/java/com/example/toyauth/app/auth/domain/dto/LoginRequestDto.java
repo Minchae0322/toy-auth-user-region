@@ -1,4 +1,4 @@
-package com.example.toyauth.app.location.domain.dto;
+package com.example.toyauth.app.auth.domain.dto;
 
 
 import jakarta.validation.constraints.Email;

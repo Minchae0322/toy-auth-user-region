@@ -23,8 +23,8 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    @Comment("이메일 (로그인 ID 역할)")
-    private String email;
+    @Comment("이메일 혹은 username (로그인 ID 역할)")
+    private String username;
 
     @Column(nullable = false)
     @Comment("비밀번호 (일반 회원가입 시 사용, OAuth 로그인 시 null 가능)")
@@ -41,7 +41,7 @@ public class User {
 
     @Column(nullable = false)
     @Comment("계정 활성화 여부")
-    private boolean activated;
+    private boolean activated = true;
 
     @Column
     @Comment("OAuth2 제공자 (google, github, naver 등)")

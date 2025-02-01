@@ -1,5 +1,7 @@
-package com.example.toyauth.app.user.domain;
+package com.example.toyauth.app.auth.domain;
 
+import com.example.toyauth.app.user.domain.User;
+import lombok.Builder;
 import lombok.Getter;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -9,26 +11,32 @@ import org.springframework.security.oauth2.core.user.OAuth2User;
 import java.util.*;
 
 @Getter
+@Builder
 public class MyUserDetails implements UserDetails, OAuth2User {
 
     private final User user;
-    private final Map<String, Object> attributes;
 
-    // 표준 사용자 이름/비밀번호 인증을 위한 생성자
-    public MyUserDetails(User user) {
-        this.user = user;
-        this.attributes =  Collections.emptyMap(); // OAuth 사용자가 아닌 경우 속성을 null로 설정
+    @Builder.Default
+    private final Map<String, Object> attributes = Collections.emptyMap();
+
+    //attributes 가 사용되지않으면 default 로 설정
+    public static MyUserDetails fromOauth2User(User user, Map<String, Object> attributes) {
+        return MyUserDetails.builder()
+                .user(user)
+                .attributes(attributes)
+                .build();
     }
 
-    // OAuth2 인증을 위한 생성자
-    public MyUserDetails(User user, Map<String, Object> attributes) {
-        this.user = user;
-        this.attributes = (attributes == null) ? Collections.emptyMap() : attributes;
+    public static MyUserDetails fromUser(User user) {
+        return MyUserDetails.builder()
+                .user(user)
+                .build();
     }
+
 
     @Override
     public String getName() {
-        return user.getEmail();
+        return user.getUsername();
     }
 
     @Override
@@ -50,6 +58,6 @@ public class MyUserDetails implements UserDetails, OAuth2User {
 
     @Override
     public String getUsername() {
-        return user.getEmail();
+        return user.getUsername();
     }
 }
