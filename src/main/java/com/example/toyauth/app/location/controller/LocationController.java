@@ -1,7 +1,7 @@
-package com.example.toyauth.app.auth.controller;
+package com.example.toyauth.app.location.controller;
 
-import com.example.toyauth.app.auth.domain.dto.KakaoSearchLocationResponse;
-import com.example.toyauth.app.auth.service.LocationService;
+import com.example.toyauth.app.location.domain.dto.KakaoSearchLocationResponse;
+import com.example.toyauth.app.location.service.LocationService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;

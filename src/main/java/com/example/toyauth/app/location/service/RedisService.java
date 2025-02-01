@@ -1,4 +1,4 @@
-package com.example.toyauth.app.auth.service;
+package com.example.toyauth.app.location.service;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.RedisTemplate;
