@@ -24,7 +24,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
     @Override
     public OAuth2User loadUser(OAuth2UserRequest userRequest) throws OAuth2AuthenticationException {
         OAuth2User oAuth2User = getOAuth2User(userRequest);
-        OAuth2UserProfile oAuth2UserProfile = OAuthAttributes.extract(userRequest.getClientRegistration().getClientId(),
+        OAuth2UserProfile oAuth2UserProfile = OAuthAttributes.extract(userRequest.getClientRegistration().getRegistrationId(),
                 oAuth2User.getAttributes());
 
         User user = findUserOrElseCreate(oAuth2UserProfile);

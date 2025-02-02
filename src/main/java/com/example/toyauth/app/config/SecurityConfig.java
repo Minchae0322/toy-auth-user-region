@@ -37,12 +37,14 @@ public class SecurityConfig {
                 .cors(httpSecurityCorsConfigurer -> httpSecurityCorsConfigurer.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 모드
-                .formLogin(AbstractHttpConfigurer::disable) // formLogin 비활성화
+                .formLogin(AbstractHttpConfigurer::disable)
+
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
                         .successHandler(new LoginSuccessHandler(jwtProvider))
                         .failureHandler(new LoginFailureHandler())
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(userDetailsService))
                 )
+
                 .build();
     }
     @Bean
@@ -60,7 +62,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
         configuration.addAllowedOrigin(HTTP_HTTPS + "://localhost:5173");
         configuration.addAllowedOrigin(HTTP_HTTPS + "://" + SERVER_URL);
-        configuration.addAllowedOrigin(HTTP_HTTPS +"://localhost:8080");
+        configuration.addAllowedOrigin(HTTP_HTTPS +"://localhost:8081");
         configuration.addAllowedHeader("*");
         configuration.addAllowedMethod("*");
         configuration.addExposedHeader(ACCESS_TOKEN_HEADER_NAME);

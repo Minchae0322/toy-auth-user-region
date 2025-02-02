@@ -22,6 +22,7 @@ public class OAuth2UserProfile {
         return User.builder()
                 .provider(provider)
                 .providerId(id)
+                .username(id)
                 .role(Role.USER)
                 .activated(true)
                 .nickname(RandomNicknameUtil.generateRandomNickname())

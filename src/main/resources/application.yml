@@ -41,12 +41,12 @@ spring:
             scope: email, profile
             redirect-uri: https://hityundong.com/api/login/oauth2/code/google
 
-
           github:
-            client-id: 571f9c36c7e0975a8c28
-            client-secret: 1a1315e71256402aa03a16a512fe4dbb95ee895a
+            client-id: Ov23li5J8FK2zQimI1DB
+            client-secret: 27acd3c6996914a58ced2b54e8bd783136f6aa6b
             authorization-grant-type: authorization_code
-            redirect-uri: https://hityundong.com/api/login/oauth2/code/github
+            redirect-uri: http://localhost:8081/api/login/oauth2/code/github
+            scope: read:user, user:email
 
         provider: #네이버의 provider는 등록되어 있지 않아 사용자가 등록해야된다.
           naver:
