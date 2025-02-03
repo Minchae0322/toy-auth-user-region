@@ -4,6 +4,7 @@ pipeline {
         BACKUP_DIR = "/backup/jenkins_builds/${JOB_NAME}" // 백업 기본 디렉토리
         PREVIOUS_VERSION_FILE = "/backup/jenkins_builds/${JOB_NAME}/last_build_version.txt" // 이전 빌드 기록 파일
         DOCKER_IMAGE = "auth-image:${BUILD_NUMBER}" // Docker 이미지 태그
+        DOCKER_NETWORK = "app-network" // Docker 네트워크 이름
     }
     stages {
         stage('Prepare Version') {
@@ -42,11 +43,22 @@ pipeline {
         stage('Docker Run') {
             steps {
                 script {
-                    // Stop and remove existing container if it exists
+                    // Ensure the custom Docker network exists
+                    sh '''
+                    if ! docker network ls | grep -q ${DOCKER_NETWORK}; then
+                        docker network create ${DOCKER_NETWORK}
+                    fi
+                    '''
+                    
+                    // Stop and remove existing container if it exists, then run with the custom network
                     sh '''
                     docker stop auth-container || true
                     docker rm auth-container || true
-                    docker run -d --name auth-container -p 8081:8081 ${DOCKER_IMAGE}
+                    docker run -d \
+                        --name auth-container \
+                        --network ${DOCKER_NETWORK} \
+                        -p 8081:8081 \
+                        ${DOCKER_IMAGE}
                     '''
                 }
             }
