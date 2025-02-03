@@ -17,16 +17,21 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequiredArgsConstructor
 @SecurityRequirement(name = "oauth2")
-@RequestMapping(value = "/login")
+@RequestMapping
 public class AuthController {
     private final AuthService authService;
 
-    @GetMapping("")
+    @GetMapping("/login")
     @Operation(summary = "사용자 로그인",
             tags = "AuthController")
     public ResponseEntity<?> login(@RequestBody @Valid LoginRequestDto loginRequestDto) {
         return ResponseEntity.ok(authService.login(loginRequestDto));
     }
+
+    @GetMapping("/oauth2/authorization/github")
+    @Operation(summary = "깃헙 oauth2 로그인",
+            tags = "AuthController")
+    public void githubLogin() {}
 
 
 

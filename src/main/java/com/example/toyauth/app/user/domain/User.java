@@ -1,6 +1,7 @@
 package com.example.toyauth.app.user.domain;
 
 import com.example.toyauth.app.common.enumuration.Role;
+import com.example.toyauth.app.user.domain.dto.UserEncodeDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
@@ -75,5 +76,9 @@ public class User {
     @PreUpdate
     protected void onUpdate() {
         this.updatedAt = LocalDateTime.now();
+    }
+
+    public void encode(UserEncodeDto userEncodeDto) {
+        this.password = userEncodeDto.getEncryptedPassword();
     }
 }
