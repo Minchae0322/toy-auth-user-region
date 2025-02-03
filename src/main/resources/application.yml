@@ -68,6 +68,7 @@ spring:
     username: user
     password: Wjdals12!
 
+
   jpa:
     show-sql: false
     hibernate:
