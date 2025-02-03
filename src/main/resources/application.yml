@@ -65,6 +65,7 @@ spring:
     url: jdbc:mysql://localhost:3306/toy?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: user
     password: Wjdals12!
+
   jpa:
     show-sql: false
     hibernate:
