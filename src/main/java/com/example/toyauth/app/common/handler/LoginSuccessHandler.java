@@ -1,5 +1,6 @@
 package com.example.toyauth.app.common.handler;
 
+import com.example.toyauth.app.common.dto.JwtDto;
 import com.example.toyauth.app.common.util.JwtProvider;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -14,6 +15,8 @@ import org.springframework.web.util.UriComponentsBuilder;
 import java.io.IOException;
 import java.net.URI;
 
+import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
+
 
 @Getter
 @RequiredArgsConstructor
@@ -25,21 +28,12 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
-        /*TokenInfo tokenInfo = jwtTokenProvider.generateAccessAndRefreshTokens(authentication);
-
-        changeUserLoggedIn(authentication);
-
-        TokenEdit tokenEdit = TokenEdit.builder()
-                .username(authentication.getName())
-                .refreshToken(tokenInfo.getRefreshToken())
-                .build();
-
-        tokenService.updateRefreshToken(tokenEdit);
+        JwtDto jwtDto = jwtProvider.generateAccessAndRefreshTokens(authentication);
 
         response.setStatus(HttpServletResponse.SC_OK);
-       *//* response.setContentType(APPLICATION_JSON_VALUE);
-        response.setHeader("Authorization", tokenInfo.getAccessToken());*//*
-        redirect(request, response, tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());*/
+        response.setContentType(APPLICATION_JSON_VALUE);
+        response.setHeader("Authorization", jwtDto.getAccessToken());
+        //redirect(request, response, tokenInfo.getAccessToken(), tokenInfo.getRefreshToken());*/
     }
 
     /*private void changeUserLoggedIn(Authentication authentication) {

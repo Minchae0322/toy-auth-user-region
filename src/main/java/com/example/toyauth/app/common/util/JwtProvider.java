@@ -1,5 +1,6 @@
 package com.example.toyauth.app.common.util;
 
+import com.example.toyauth.app.auth.domain.MyUserDetails;
 import com.example.toyauth.app.common.dto.JwtDto;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
@@ -33,7 +34,6 @@ public class JwtProvider {
         String refreshToken = generateToken(authentication, REFRESH_TOKEN_EXPIRATION);
 
         return JwtDto.builder()
-                .grantType("USER")
                 .accessToken(accessToken)
                 .refreshToken(refreshToken)
                 .build();
@@ -52,17 +52,16 @@ public class JwtProvider {
 
     private Claims generateTokenClaims(Authentication authentication) {
         Claims claims = Jwts.claims().setSubject(authentication.getName());
-        //MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
 
         String authorization = authentication.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
         claims.put("auth", authorization);
-        claims.put("id", 1L);
-    /*    String provider = determineProvider(authentication);
-        claims.put("provider", provider);*/
-
+        claims.put("id", userDetails.getUser().getId());
+        String provider = userDetails.getUser().getProvider();
+        claims.put("provider", provider);
 
         return claims;
     }
