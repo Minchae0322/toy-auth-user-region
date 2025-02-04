@@ -1,6 +1,7 @@
-//todo 
-## jenkins 컨테이너 올리고, 빌드파일 도커로 올리는 과정 문서화
-## 서버에 mysql 컨테이너 올려서 데이터베이스 연동, shell 파일로 자동화
+
+## jenkins 컨테이너 올리고, 빌드파일 도커로 올리는 과정 문서화 
+## 서버에 mysql 컨테이너 올려서 데이터베이스 연동, shell 파일로 자동화 - done
+
 
 ##jenkins webhook trigger : branch main 이 업데이트 될 때
 
