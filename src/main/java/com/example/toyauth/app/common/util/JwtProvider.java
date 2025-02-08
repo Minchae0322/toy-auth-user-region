@@ -59,7 +59,7 @@ public class JwtProvider {
                 .collect(Collectors.joining(","));
 
         claims.put("auth", authorization);
-        claims.put("id", userDetails.getUser().getId());
+        claims.put("username", userDetails.getUser().getUsername());
         String provider = userDetails.getUser().getProvider();
         claims.put("provider", provider);
 
