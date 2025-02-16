@@ -1,7 +1,7 @@
 
 ## 서버에 mysql 컨테이너 올려서 데이터베이스 연동, shell 파일로 자동화 - done
 
-d
+
 ##jenkins webhook trigger : branch main 이 업데이트 될 때
 
 
