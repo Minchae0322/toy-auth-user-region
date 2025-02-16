@@ -1,11 +1,14 @@
 pipeline {
     agent any
+
     environment {
         BACKUP_DIR = "/backup/jenkins_builds/${JOB_NAME}" // 백업 기본 디렉토리
         PREVIOUS_VERSION_FILE = "/backup/jenkins_builds/${JOB_NAME}/last_build_version.txt" // 이전 빌드 기록 파일
         DOCKER_IMAGE = "auth-image:${BUILD_NUMBER}" // Docker 이미지 태그
         DOCKER_NETWORK = "app-network" // Docker 네트워크 이름
+        ENV_FILE = "toy.env" // 환경 변수 파일명
     }
+
     stages {
         stage('Prepare Version') {
             steps {
@@ -24,33 +27,49 @@ pipeline {
                 }
             }
         }
+
+        stage('Load Environment Variables') {
+            steps {
+                script {
+                    // toy.env 파일이 있는지 확인하고, 있으면 환경 변수로 로드
+                    if (fileExists("toy.env")) {
+                        sh 'export $(grep -v "^#" toy.env | xargs)'
+                        echo "Loaded environment variables from toy.env file."
+                    } else {
+                        echo "No toy.env file found!"
+                    }
+                }
+            }
+        }
+
         stage('Build') {
             steps {
                 sh 'chmod +x gradlew'
                 sh './gradlew clean build'
             }
         }
+
         stage('Docker Build') {
             steps {
                 script {
-                    // Build Docker image using the JAR file
                     sh '''
                     docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=build/libs/*.jar .
                     '''
                 }
             }
         }
+
         stage('Docker Run') {
             steps {
                 script {
-                    // Ensure the custom Docker network exists
+                    // Docker 네트워크가 존재하는지 확인하고, 없으면 생성
                     sh '''
                     if ! docker network ls | grep -q ${DOCKER_NETWORK}; then
                         docker network create ${DOCKER_NETWORK}
                     fi
                     '''
-                    
-                    // Stop and remove existing container if it exists, then run with the custom network
+
+                    // 기존 컨테이너 중지 및 삭제 후 새 컨테이너 실행
                     sh '''
                     docker stop auth-container || true
                     docker rm auth-container || true
@@ -58,12 +77,14 @@ pipeline {
                         --name auth-container \
                         --network ${DOCKER_NETWORK} \
                         -p 8081:8081 \
+                        --env-file toy.env \
                         ${DOCKER_IMAGE}
                     '''
                 }
             }
         }
     }
+
     post {
         failure {
             script {
@@ -82,6 +103,7 @@ pipeline {
                 }
             }
         }
+
         success {
             script {
                 echo "Build succeeded with version: ${env.BUILD_VERSION}"

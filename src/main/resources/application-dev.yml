@@ -1,16 +1,16 @@
 kakao:
   api:
-    key: "ebb140871ec864bf632eb220b2c8f333"
+    key: ${KAKAO_API_KEY:default-kakao-key} # 환경 변수에서 가져오기
 
 server:
-  port: 8081
+  port: ${SERVER_PORT:8081}
 
 spring:
   data:
     redis:
-      host: redis-container # 운영 환경에서는 도커 컨테이너 사용
-      port: 6379
-      password:
+      host: ${REDIS_HOST:redis-container} # 환경 변수 적용
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:} # 비밀번호가 없을 경우 기본값 비워둠
       database: 0
       timeout: 2000
       ssl:
@@ -21,22 +21,22 @@ spring:
       client:
         registration:
           naver:
-            client-id: LvLgBDoxDkpt12w_uWf4
-            client-secret: jYPs9EzRZI
+            client-id: ${NAVER_CLIENT_ID:default-naver-client-id}
+            client-secret: ${NAVER_CLIENT_SECRET:default-naver-client-secret}
             scope: name
             client-name: Naver
             authorization-grant-type: authorization_code
             redirect-uri: https://hityundong.com/api/login/oauth2/code/naver
 
           google:
-            client-id: 4259829940-5fchek1qftvv1i3nhqbjh4lc54pnfek0.apps.googleusercontent.com
-            client-secret: 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
+            client-id: ${GOOGLE_CLIENT_ID:default-google-client-id}
+            client-secret: ${GOOGLE_CLIENT_SECRET:default-google-client-secret}
             scope: email, profile
             redirect-uri: https://hityundong.com/api/login/oauth2/code/google
 
           github:
-            client-id: Ov23li5J8FK2zQimI1DB
-            client-secret: 27acd3c6996914a58ced2b54e8bd783136f6aa6b
+            client-id: ${GITHUB_CLIENT_ID:default-github-client-id}
+            client-secret: ${GITHUB_CLIENT_SECRET:default-github-client-secret}
             authorization-grant-type: authorization_code
             redirect-uri: http://3.35.210.236:8081/api/login/oauth2/code/github
             scope: read:user, user:email
@@ -56,9 +56,9 @@ spring:
 
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
-    url: jdbc:mysql://mysql-container:3306/toy?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
-    username: user
-    password: Wjdals12!
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT}/${DB_NAME}?serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME:default-db-user}
+    password: ${DB_PASSWORD:default-db-password}
     hikari:
       maximum-pool-size: 10
       data-source-properties:
@@ -78,3 +78,6 @@ spring:
     properties:
       hibernate:
         format_sql: true
+
+jwt:
+  secret: ${JWT_SECRET:default-secret-key}

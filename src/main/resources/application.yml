@@ -26,7 +26,7 @@ springdoc:
 
 file:
   upload:
-    path: uploads\\ # 파일 업로드 기본 경로
+    path: ${FILE_UPLOAD_PATH:/uploads/}  # 기본값: /uploads/
 
 jwt:
-  secret: VlwEyVBsYt9V7zq57TejMnVUyzblYcfPQye08f7MGVA9XkHa
+  secret: ${JWT_SECRET:default-secret-key}  # 기본값 설정
