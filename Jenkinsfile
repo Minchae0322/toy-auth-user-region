@@ -28,31 +28,29 @@ pipeline {
             }
         }
 
-       stage('Load Environment Variables') {
-           steps {
-               script {
-                   if (fileExists("toy.env")) {
-                       def envVars = readFile("toy.env").trim().split("\n")
-                       def envList = []
-                       envVars.each { line ->
-                           def keyValue = line.tokenize('=')
-                           if (keyValue.size() == 2) {
-                               def key = keyValue[0].trim()
-                               def value = keyValue[1].trim()
-                               envList.add("${key}=${value}")
-                               echo "Loaded ENV: ${key}"
-                           }
-                       }
-                       withEnv(envList) {
-                           echo "✅ Environment variables successfully loaded"
-                       }
-                   } else {
-                       echo "⚠️ No toy.env file found!"
-                   }
-               }
-           }
-       }
-
+        stage('Load Environment Variables') {
+            steps {
+                script {
+                    if (fileExists("toy.env")) {
+                        def envVars = readFile("toy.env").trim().split("\n")
+                        def envList = []
+                        envVars.each { line ->
+                            def keyValue = line.tokenize('=')
+                            if (keyValue.size() == 2) {
+                                def key = keyValue[0].trim()
+                                def value = keyValue[1].trim()
+                                envList.add("${key}=${value}")
+                                echo "Loaded ENV: ${key}"
+                                env[key] = value // 전역 환경 변수 설정
+                            }
+                        }
+                        echo "✅ Environment variables successfully loaded"
+                    } else {
+                        error("🚨 Error: toy.env file not found!")
+                    }
+                }
+            }
+        }
 
         stage('Build') {
             steps {
@@ -64,7 +62,7 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    def jarFile = sh(script: "find build/libs -type f -name '*.jar' | head -n 1", returnStdout: true).trim()
+                    def jarFile = sh(script: "ls -1 build/libs/*.jar | grep -v plain | head -n 1", returnStdout: true).trim()
                     echo "Using JAR File: ${jarFile}"
                     sh """
                     docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=${jarFile} .
@@ -78,7 +76,8 @@ pipeline {
                 script {
                     sh '''
                     if [ ! -f "toy.env" ]; then
-                        echo "⚠️ No toy.env file found! Docker might fail!"
+                        echo "🚨 Error: toy.env file not found!"
+                        exit 1
                     fi
                     '''
 
@@ -91,12 +90,8 @@ pipeline {
                     sh '''
                     docker stop auth-container || true
                     docker rm auth-container || true
-                    docker run -d \
-                        --name auth-container \
-                        --network ${DOCKER_NETWORK} \
-                        -p 8081:8081 \
-                        --env-file toy.env \
-                        ${DOCKER_IMAGE}
+                    docker rmi $(docker images -q auth-image) || true
+                    docker run -d --name auth-container --network ${DOCKER_NETWORK} -p 8081:8081 --env-file toy.env ${DOCKER_IMAGE}
                     '''
                 }
             }
