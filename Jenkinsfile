@@ -68,6 +68,12 @@ pipeline {
                     sh """
                     docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=${jarFile} .
                     """
+
+                    // 🚀 Docker 이미지 빌드 성공 여부 확인
+                    def dockerImageExists = sh(script: "docker images -q ${DOCKER_IMAGE}", returnStdout: true).trim()
+                    if (!dockerImageExists) {
+                        error "🚨 Docker build failed! Image not found!"
+                    }
                 }
             }
         }
@@ -88,10 +94,17 @@ pipeline {
                     fi
                     '''
 
+                    // 🚀 실행 중인 컨테이너 체크 후 삭제
                     sh '''
-                    docker stop auth-container || true
-                    docker rm auth-container || true
-                    docker images -q ${DOCKER_IMAGE} && docker rmi ${DOCKER_IMAGE} || true
+                    if docker ps -a | grep -q auth-container; then
+                        echo "Stopping and removing existing auth-container..."
+                        docker stop auth-container || true
+                        docker rm auth-container || true
+                    fi
+                    '''
+
+                    // 🚀 Docker 실행
+                    sh '''
                     docker run -d --name auth-container --network ${DOCKER_NETWORK} -p 8081:8081 --env-file ${ENV_FILE} ${DOCKER_IMAGE}
                     '''
                 }
