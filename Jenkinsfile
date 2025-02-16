@@ -106,10 +106,15 @@ pipeline {
                     echo "Restoring previous build version: ${env.PREVIOUS_BUILD_VERSION}"
                     sh '''
                     if [ -d "${BACKUP_DIR}/${PREVIOUS_BUILD_VERSION}" ]; then
-                        cp -r ${BACKUP_DIR}/${PREVIOUS_BUILD_VERSION}/* build/libs/
-                        echo "Restored previous build artifacts from ${PREVIOUS_BUILD_VERSION}"
+                        JAR_FILE=$(ls -1 ${BACKUP_DIR}/${PREVIOUS_BUILD_VERSION}/*-SNAPSHOT.jar | head -n 1)
+                        if [ -f "$JAR_FILE" ]; then
+                            cp $JAR_FILE build/libs/
+                            echo "✅ Restored previous build artifacts from ${PREVIOUS_BUILD_VERSION}"
+                        else
+                            echo "⚠️ No valid JAR file found in backup!"
+                        fi
                     else
-                        echo "No backup available for previous build version: ${PREVIOUS_BUILD_VERSION}"
+                        echo "⚠️ No backup available for previous build version: ${PREVIOUS_BUILD_VERSION}"
                     fi
                     '''
                 } else {
@@ -120,7 +125,7 @@ pipeline {
 
         success {
             script {
-                echo "Build succeeded with version: ${env.BUILD_VERSION}"
+                echo "✅ Build succeeded with version: ${env.BUILD_VERSION}"
                 sh '''
                 mkdir -p ${BACKUP_DIR}/${BUILD_VERSION}
                 cp build/libs/*.jar ${BACKUP_DIR}/${BUILD_VERSION}/
