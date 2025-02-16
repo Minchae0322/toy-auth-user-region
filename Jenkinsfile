@@ -31,8 +31,8 @@ pipeline {
         stage('Load Environment Variables') {
             steps {
                 script {
-                    if (fileExists("toy.env")) {
-                        def envVars = readFile("toy.env").trim().split("\n")
+                    if (fileExists(ENV_FILE)) {
+                        def envVars = readFile(ENV_FILE).trim().split("\n")
                         def envList = []
                         envVars.each { line ->
                             def keyValue = line.tokenize('=')
@@ -41,12 +41,13 @@ pipeline {
                                 def value = keyValue[1].trim()
                                 envList.add("${key}=${value}")
                                 echo "Loaded ENV: ${key}"
-                                env[key] = value // 전역 환경 변수 설정
                             }
                         }
-                        echo "✅ Environment variables successfully loaded"
+                        withEnv(envList) {
+                            echo "✅ Environment variables successfully loaded"
+                        }
                     } else {
-                        error("🚨 Error: toy.env file not found!")
+                        error("🚨 Error: ${ENV_FILE} file not found!")
                     }
                 }
             }
@@ -75,8 +76,8 @@ pipeline {
             steps {
                 script {
                     sh '''
-                    if [ ! -f "toy.env" ]; then
-                        echo "🚨 Error: toy.env file not found!"
+                    if [ ! -f "${ENV_FILE}" ]; then
+                        echo "🚨 Error: ${ENV_FILE} file not found!"
                         exit 1
                     fi
                     '''
@@ -90,8 +91,8 @@ pipeline {
                     sh '''
                     docker stop auth-container || true
                     docker rm auth-container || true
-                    docker rmi $(docker images -q auth-image) || true
-                    docker run -d --name auth-container --network ${DOCKER_NETWORK} -p 8081:8081 --env-file toy.env ${DOCKER_IMAGE}
+                    docker images -q ${DOCKER_IMAGE} && docker rmi ${DOCKER_IMAGE} || true
+                    docker run -d --name auth-container --network ${DOCKER_NETWORK} -p 8081:8081 --env-file ${ENV_FILE} ${DOCKER_IMAGE}
                     '''
                 }
             }
