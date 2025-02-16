@@ -31,12 +31,19 @@ pipeline {
         stage('Load Environment Variables') {
             steps {
                 script {
-                    // toy.env 파일이 있는지 확인하고, 있으면 환경 변수로 로드
                     if (fileExists("toy.env")) {
-                        sh 'export $(grep -v "^#" toy.env | xargs)'
-                        echo "Loaded environment variables from toy.env file."
+                        def envVars = readFile("toy.env").trim().split("\n")
+                        envVars.each { line ->
+                            def keyValue = line.tokenize('=')
+                            if (keyValue.size() == 2) {
+                                def key = keyValue[0].trim()
+                                def value = keyValue[1].trim()
+                                env[key] = value
+                                echo "Loaded ENV: ${key}"
+                            }
+                        }
                     } else {
-                        echo "No toy.env file found!"
+                        echo "⚠️ No toy.env file found!"
                     }
                 }
             }
@@ -52,9 +59,11 @@ pipeline {
         stage('Docker Build') {
             steps {
                 script {
-                    sh '''
-                    docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=build/libs/*.jar .
-                    '''
+                    def jarFile = sh(script: "find build/libs -type f -name '*.jar' | head -n 1", returnStdout: true).trim()
+                    echo "Using JAR File: ${jarFile}"
+                    sh """
+                    docker build -t ${DOCKER_IMAGE} --build-arg JAR_FILE=${jarFile} .
+                    """
                 }
             }
         }
@@ -62,14 +71,18 @@ pipeline {
         stage('Docker Run') {
             steps {
                 script {
-                    // Docker 네트워크가 존재하는지 확인하고, 없으면 생성
+                    sh '''
+                    if [ ! -f "toy.env" ]; then
+                        echo "⚠️ No toy.env file found! Docker might fail!"
+                    fi
+                    '''
+
                     sh '''
                     if ! docker network ls | grep -q ${DOCKER_NETWORK}; then
                         docker network create ${DOCKER_NETWORK}
                     fi
                     '''
 
-                    // 기존 컨테이너 중지 및 삭제 후 새 컨테이너 실행
                     sh '''
                     docker stop auth-container || true
                     docker rm auth-container || true
