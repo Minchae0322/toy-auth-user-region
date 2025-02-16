@@ -28,26 +28,31 @@ pipeline {
             }
         }
 
-        stage('Load Environment Variables') {
-            steps {
-                script {
-                    if (fileExists("toy.env")) {
-                        def envVars = readFile("toy.env").trim().split("\n")
-                        envVars.each { line ->
-                            def keyValue = line.tokenize('=')
-                            if (keyValue.size() == 2) {
-                                def key = keyValue[0].trim()
-                                def value = keyValue[1].trim()
-                                env[key] = value
-                                echo "Loaded ENV: ${key}"
-                            }
-                        }
-                    } else {
-                        echo "⚠️ No toy.env file found!"
-                    }
-                }
-            }
-        }
+       stage('Load Environment Variables') {
+           steps {
+               script {
+                   if (fileExists("toy.env")) {
+                       def envVars = readFile("toy.env").trim().split("\n")
+                       def envList = []
+                       envVars.each { line ->
+                           def keyValue = line.tokenize('=')
+                           if (keyValue.size() == 2) {
+                               def key = keyValue[0].trim()
+                               def value = keyValue[1].trim()
+                               envList.add("${key}=${value}")
+                               echo "Loaded ENV: ${key}"
+                           }
+                       }
+                       withEnv(envList) {
+                           echo "✅ Environment variables successfully loaded"
+                       }
+                   } else {
+                       echo "⚠️ No toy.env file found!"
+                   }
+               }
+           }
+       }
+
 
         stage('Build') {
             steps {
