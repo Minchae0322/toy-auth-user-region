@@ -79,5 +79,10 @@ spring:
       hibernate:
         format_sql: true
 
+
+file:
+  upload:
+    path: ${FILE_UPLOAD_PATH:/uploads/}  # 기본값: /uploads/
+
 jwt:
-  secret: ${JWT_SECRET:default-secret-key}
+  secret: ${JWT_SECRET:default-secret-key}  # 기본값 설정

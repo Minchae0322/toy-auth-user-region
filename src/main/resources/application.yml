@@ -5,7 +5,7 @@ server:
 
 spring:
   profiles:
-    active: dev # 기본 활성화 프로필 (dev)
+    active: local # 기본 활성화 프로필 (dev)
 
   messages:
     basename: messages
@@ -24,9 +24,4 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
-file:
-  upload:
-    path: ${FILE_UPLOAD_PATH:/uploads/}  # 기본값: /uploads/
 
-jwt:
-  secret: ${JWT_SECRET:default-secret-key}  # 기본값 설정
