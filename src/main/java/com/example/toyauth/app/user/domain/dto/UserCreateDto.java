@@ -1,6 +1,7 @@
 package com.example.toyauth.app.user.domain.dto;
 
 import com.example.toyauth.app.common.enumuration.Role;
+import com.example.toyauth.app.common.util.RandomNicknameUtil;
 import com.example.toyauth.app.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.Column;
@@ -23,6 +24,7 @@ public record UserCreateDto(
                 .username(username)
                 .password(password)
                 .role(Role.USER)
+                .nickname(RandomNicknameUtil.generateRandomNickname())
                 .provider("common")
                 .activated(true)
                 .build();
