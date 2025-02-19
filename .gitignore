@@ -39,5 +39,5 @@ out/
 ## application
 *.yml
 *.properties
-
+src/main/resources
 toy.env
