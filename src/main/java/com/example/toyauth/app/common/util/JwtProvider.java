@@ -60,6 +60,7 @@ public class JwtProvider {
 
         claims.put("auth", authorization);
         claims.put("username", userDetails.getUser().getUsername());
+        claims.put("userId", userDetails.getUser().getId());
         String provider = userDetails.getUser().getProvider();
         claims.put("provider", provider);
 

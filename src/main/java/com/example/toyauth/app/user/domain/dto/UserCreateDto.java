@@ -18,11 +18,11 @@ public record UserCreateDto(
         @NotBlank(message = "비밀번호는 공백 일 수 없습니다.")
         @Schema(title = "비밀번호 (일반 회원가입 시 사용)", description = "비밀번호")
         String password
-) {
+) implements EncodableDto
+{
     public User toEntity() {
         return User.builder()
                 .username(username)
-                .password(password)
                 .role(Role.USER)
                 .nickname(RandomNicknameUtil.generateRandomNickname())
                 .provider("common")
@@ -30,4 +30,8 @@ public record UserCreateDto(
                 .build();
     }
 
+    @Override
+    public String getPassword() {
+        return this.password;
+    }
 }

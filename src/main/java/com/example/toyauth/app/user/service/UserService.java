@@ -3,10 +3,7 @@ package com.example.toyauth.app.user.service;
 import com.example.toyauth.app.common.exception.RestApiException;
 import com.example.toyauth.app.common.exception.impl.UserErrorCode;
 import com.example.toyauth.app.user.domain.User;
-import com.example.toyauth.app.user.domain.dto.UserCreateDto;
-import com.example.toyauth.app.user.domain.dto.UserDto;
-import com.example.toyauth.app.user.domain.dto.UserEncodeDto;
-import com.example.toyauth.app.user.domain.dto.UserUpdateDto;
+import com.example.toyauth.app.user.domain.dto.*;
 import com.example.toyauth.app.user.repository.UserRepository;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
@@ -42,10 +39,23 @@ public class UserService {
         return UserDto.of(user);
     }
 
+    public Long changePassword(Long userId, UserPasswordChangeDto passwordChangeDto) {
+        User user = findUserByIdAndActivated(userId);
 
-    private UserEncodeDto getUserEncodeDto(UserCreateDto userCreateDto) {
+        if(!passwordEncoder.matches(passwordChangeDto.oldPassword(), user.getPassword())) {
+            throw new RestApiException(UserErrorCode.USER_NOT_EXIST);
+        }
+
+        UserEncodeDto userEncodeDto = getUserEncodeDto(passwordChangeDto);
+        user.encode(userEncodeDto);
+
+        return userRepository.save(user).getId();
+    }
+
+
+    private UserEncodeDto getUserEncodeDto(EncodableDto encodableDto) {
         return UserEncodeDto.builder()
-                .encryptedPassword(passwordEncoder.encode(userCreateDto.password()))
+                .encryptedPassword(passwordEncoder.encode(encodableDto.getPassword()))
                 .build();
     }
 
