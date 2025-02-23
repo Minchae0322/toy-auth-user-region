@@ -1,5 +1,6 @@
 package com.example.toyauth.app.user.domain.dto;
 
+import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.user.domain.User;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,7 +25,7 @@ public class UserDto {
     private Role role;
 
     @Schema(description = "로그인 플랫폼")
-    private String provider;
+    private Provider provider;
 
     @Schema(description = "계정 생성 일")
     private LocalDateTime createdAt;

@@ -1,5 +1,6 @@
 package com.example.toyauth.app.auth.domain.dto;
 
+import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.common.util.RandomNicknameUtil;
 import com.example.toyauth.app.user.domain.User;
@@ -20,7 +21,7 @@ public class OAuth2UserProfile {
 
     public User toEntity() {
         return User.builder()
-                .provider(provider)
+                .provider(Provider.ofProvider(provider))
                 .providerId(id)
                 .username(id)
                 .role(Role.USER)

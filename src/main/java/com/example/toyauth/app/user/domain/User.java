@@ -1,5 +1,6 @@
 package com.example.toyauth.app.user.domain;
 
+import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.user.domain.dto.UserEncodeDto;
 import jakarta.persistence.*;
@@ -45,8 +46,9 @@ public class User {
     private boolean activated = true;
 
     @Column(unique = true)
+    @Enumerated(EnumType.STRING)
     @Comment("OAuth2 제공자 (google, github, naver 등)")
-    private String provider;
+    private Provider provider;
 
     @Column
     @Comment("OAuth2 제공자에서 받은 사용자 ID")

@@ -1,5 +1,6 @@
 package com.example.toyauth.app.user.domain.dto;
 
+import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.common.util.RandomNicknameUtil;
 import com.example.toyauth.app.user.domain.User;
@@ -25,7 +26,7 @@ public record UserCreateDto(
                 .username(username)
                 .role(Role.USER)
                 .nickname(RandomNicknameUtil.generateRandomNickname())
-                .provider("common")
+                .provider(Provider.COMMON)
                 .activated(true)
                 .build();
     }

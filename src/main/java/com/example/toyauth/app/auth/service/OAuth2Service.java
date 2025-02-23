@@ -3,6 +3,7 @@ package com.example.toyauth.app.auth.service;
 import com.example.toyauth.app.auth.domain.dto.OAuth2UserProfile;
 import com.example.toyauth.app.common.enumuration.OAuthAttributes;
 import com.example.toyauth.app.auth.domain.MyUserDetails;
+import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.user.domain.User;
 import com.example.toyauth.app.user.repository.UserRepository;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
@@ -38,7 +39,7 @@ public class OAuth2Service implements OAuth2UserService<OAuth2UserRequest, OAuth
 
     private User findUserOrElseCreate(OAuth2UserProfile oAuth2UserProfile) {
         return userRepository.findByProviderIdAndProviderAndActivated(oAuth2UserProfile.getId(),
-                        oAuth2UserProfile.getProvider(), true)
+                        Provider.ofProvider(oAuth2UserProfile.getProvider()), true)
                 .orElseGet(() -> userRepository.save(oAuth2UserProfile.toEntity()));
     }
 }
