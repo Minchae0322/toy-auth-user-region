@@ -29,7 +29,7 @@ import static com.example.toyauth.app.common.constants.GlobalConstants.*;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
-    private final OAuth2Service userDetailsService;
+    private final OAuth2Service oAuth2Service;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -42,7 +42,7 @@ public class SecurityConfig {
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
                         .successHandler(new LoginSuccessHandler(jwtProvider))
                         .failureHandler(new LoginFailureHandler())
-                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(userDetailsService))
+                        .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
                 )
 
                 .build();

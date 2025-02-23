@@ -23,11 +23,9 @@ import org.springframework.stereotype.Service;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthService implements UserDetailsService {
+public class AuthService  {
 
     private final AuthenticationManager authenticationManager;
-
-    private final UserRepository userRepository;
 
     public Authentication login(LoginRequestDto loginRequestDto) {
         UsernamePasswordAuthenticationToken authenticationToken =
@@ -39,12 +37,6 @@ public class AuthService implements UserDetailsService {
         return authentication;
     }
 
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        User loginUser = userRepository.findByUsernameAndProvider(username, Provider.COMMON)
-                .orElseThrow(() -> new RestApiException(UserErrorCode.USER_NOT_EXIST));
 
-        return MyUserDetails.fromUser(loginUser);
-    }
 
 }
