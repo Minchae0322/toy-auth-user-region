@@ -3,9 +3,12 @@ package com.example.toyauth.app.user.controller;
 
 import com.example.toyauth.app.auth.domain.MyUserDetails;
 import com.example.toyauth.app.auth.domain.dto.LoginRequestDto;
+import com.example.toyauth.app.common.annotation.CheckUserOwn;
+import com.example.toyauth.app.common.annotation.CheckUserOwnOrAdmin;
 import com.example.toyauth.app.user.domain.dto.UserCreateDto;
 import com.example.toyauth.app.user.domain.dto.UserDto;
 import com.example.toyauth.app.user.domain.dto.UserPasswordChangeDto;
+import com.example.toyauth.app.user.domain.dto.UserUpdateDto;
 import com.example.toyauth.app.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -34,17 +37,28 @@ public class UserController {
     @GetMapping("/{userId}")
     @Operation(summary = "단일 사용자 조회",
             tags = "UserController")
-    public ResponseEntity<UserDto> getUser(@PathVariable Long userId) {
+    public ResponseEntity<UserDto.Get> getUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
 
     @PutMapping(value = "/{userId}/password")
     @Operation(summary = "비밀번호 변경", tags = "UserController")
+    @CheckUserOwn
     public ResponseEntity<Long> changePassword(
-            @Valid @RequestBody UserPasswordChangeDto userPasswordChangeDto,
-            @AuthenticationPrincipal MyUserDetails myUserDetails) {
+            @PathVariable Long userId,
+            @Valid @RequestBody UserPasswordChangeDto userPasswordChangeDto) {
 
-        return ResponseEntity.ok(userService.changePassword(myUserDetails.getUser().getId(), userPasswordChangeDto));
+        return ResponseEntity.ok(userService.changePassword(userId, userPasswordChangeDto));
+    }
+
+    @PutMapping(value = "/{userId}")
+    @Operation(summary = "유저 정보 변경", tags = "UserController")
+    @CheckUserOwnOrAdmin
+    public ResponseEntity<UserDto.Get> updateUser(
+            @PathVariable Long userId,
+            @RequestBody @Valid UserUpdateDto userUpdateDto) {
+
+        return ResponseEntity.ok(userService.updateUser(userId, userUpdateDto));
     }
 
 }

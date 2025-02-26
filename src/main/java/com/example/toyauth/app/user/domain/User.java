@@ -3,18 +3,24 @@ package com.example.toyauth.app.user.domain;
 import com.example.toyauth.app.common.enumuration.Provider;
 import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.user.domain.dto.UserEncodeDto;
+import com.example.toyauth.app.user.domain.dto.UserUpdateDto;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.Comment;
+import org.hibernate.annotations.DynamicInsert;
+import org.hibernate.annotations.DynamicUpdate;
 
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Objects;
 
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
+@DynamicUpdate
+@DynamicInsert
 @Entity
 @Table(name = "tb_user")
 public class User {
@@ -82,5 +88,15 @@ public class User {
 
     public void encode(UserEncodeDto userEncodeDto) {
         this.password = userEncodeDto.getEncryptedPassword();
+    }
+
+    public void update(UserUpdateDto userUpdateDto) {
+        if (Objects.nonNull(userUpdateDto.nickname())) {
+            this.nickname = userUpdateDto.nickname();
+        }
+
+        if (Objects.nonNull(userUpdateDto.profileImgId())) {
+            this.profileImgId = userUpdateDto.profileImgId();
+        }
     }
 }

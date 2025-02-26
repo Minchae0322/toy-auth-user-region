@@ -15,33 +15,40 @@ import java.time.LocalDateTime;
 @Builder
 public class UserDto {
 
-    @Schema(description = "사용자 아이디")
-    private Long userId;
+    @Getter
+    @Builder
+    public static class Get {
 
-    @Schema(description = "사용자 닉네임")
-    private String nickname;
+        @Schema(description = "사용자 아이디")
+        private Long userId;
 
-    @Schema(description = "유저 권한")
-    private Role role;
+        @Schema(description = "사용자 닉네임")
+        private String nickname;
 
-    @Schema(description = "로그인 플랫폼")
-    private Provider provider;
+        @Schema(description = "유저 권한")
+        private Role role;
 
-    @Schema(description = "계정 생성 일")
-    private LocalDateTime createdAt;
+        @Schema(description = "로그인 플랫폼")
+        private Provider provider;
 
-    @Schema(description = "계정 정보 수정일")
-    private LocalDateTime updatedAt;
+        @Schema(description = "계정 생성 일")
+        private LocalDateTime createdAt;
+
+        @Schema(description = "계정 정보 수정일")
+        private LocalDateTime updatedAt;
 
 
-    public static UserDto of(User user) {
-        return UserDto.builder()
-                .userId(user.getId())
-                .nickname(user.getNickname())
-                .role(user.getRole())
-                .provider(user.getProvider())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .build();
+        public static UserDto.Get of(User user) {
+            return UserDto.Get.builder()
+                    .userId(user.getId())
+                    .nickname(user.getNickname())
+                    .role(user.getRole())
+                    .provider(user.getProvider())
+                    .createdAt(user.getCreatedAt())
+                    .updatedAt(user.getUpdatedAt())
+                    .build();
+        }
     }
+
+
 }

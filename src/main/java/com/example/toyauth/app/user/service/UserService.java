@@ -28,15 +28,18 @@ public class UserService {
     }
 
 
-    public UserDto getUser(Long userId) {
+    public UserDto.Get getUser(Long userId) {
         User user = findUserByIdAndActivated(userId);
 
-        return UserDto.of(user);
+        return UserDto.Get.of(user);
     }
 
-    public UserDto updateUser(Long userId, UserUpdateDto userUpdateDto) {
+    public UserDto.Get updateUser(Long userId, UserUpdateDto userUpdateDto) {
         User user = findUserByIdAndActivated(userId);
-        return UserDto.of(user);
+
+        user.update(userUpdateDto);
+
+        return UserDto.Get.of(user);
     }
 
     public Long changePassword(Long userId, UserPasswordChangeDto passwordChangeDto) {
