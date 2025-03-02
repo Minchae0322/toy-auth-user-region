@@ -14,6 +14,9 @@ import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.List;
+
+import static com.example.toyauth.app.common.constants.GlobalConstants.ACCESS_TOKEN_REFRESH_URL;
 
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
@@ -25,6 +28,7 @@ public class JwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
+
         String token = resolveToken(request);
 
         if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
@@ -38,18 +42,20 @@ public class JwtFilter extends OncePerRequestFilter {
                 UsernamePasswordAuthenticationToken authentication =
                         new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
                 SecurityContextHolder.getContext().setAuthentication(authentication);
+                filterChain.doFilter(request, response);
+                return;
             }
         }
+        response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
 
-        filterChain.doFilter(request, response);
     }
 
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        // 필터를 제외할 경로 패턴 ("/oauth2/*" 포함)
-        return path.matches("^/(login|user|oauth2(/.*)?)$");
+        // "/api"가 붙은 엔드포인트를 올바르게 필터링
+        return path.matches("^/api/(login|user|oauth2(/.*)?)$");
     }
 
 
@@ -61,6 +67,8 @@ public class JwtFilter extends OncePerRequestFilter {
         }
         return null;
     }
+
+
 
 
 
