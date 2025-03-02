@@ -3,25 +3,35 @@ package com.example.toyauth.app.auth.domain;
 import com.example.toyauth.app.user.domain.User;
 import lombok.Builder;
 import lombok.Getter;
+import org.hibernate.annotations.Comment;
+import org.springframework.data.annotation.Id;
+import org.springframework.data.redis.core.RedisHash;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 
+import java.io.Serializable;
 import java.util.*;
 
 @Getter
 @Builder
-public class MyUserDetails implements UserDetails, OAuth2User {
+@RedisHash(value = "user", timeToLive = 7200)
+public class MyUserDetails implements UserDetails, OAuth2User, Serializable {
+
+
+    @Id
+    @Comment("Redis Key")
+    private final String userId;
 
     private final User user;
 
     @Builder.Default
     private final Map<String, Object> attributes = Collections.emptyMap();
 
-    //attributes 가 사용되지않으면 default 로 설정
     public static MyUserDetails fromOauth2User(User user, Map<String, Object> attributes) {
         return MyUserDetails.builder()
+                .userId(String.valueOf(user.getId()))
                 .user(user)
                 .attributes(attributes)
                 .build();
@@ -29,6 +39,7 @@ public class MyUserDetails implements UserDetails, OAuth2User {
 
     public static MyUserDetails fromUser(User user) {
         return MyUserDetails.builder()
+                .userId(String.valueOf(user.getId()))
                 .user(user)
                 .build();
     }
