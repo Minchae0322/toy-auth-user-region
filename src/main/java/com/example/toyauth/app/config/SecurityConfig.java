@@ -1,9 +1,11 @@
 package com.example.toyauth.app.config;
 
 import com.example.toyauth.app.auth.service.OAuth2Service;
+import com.example.toyauth.app.common.filter.JwtFilter;
 import com.example.toyauth.app.common.handler.LoginFailureHandler;
 import com.example.toyauth.app.common.handler.LoginSuccessHandler;
 import com.example.toyauth.app.common.util.JwtProvider;
+import com.example.toyauth.app.user.service.RedisUserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -16,6 +18,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
@@ -30,6 +33,7 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
     private final OAuth2Service oAuth2Service;
+    private final RedisUserService redisUserService;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -45,6 +49,7 @@ public class SecurityConfig {
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
                 )
 
+                .addFilterBefore(new JwtFilter(jwtProvider, redisUserService), UsernamePasswordAuthenticationFilter.class)
                 .build();
     }
     @Bean
