@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 모드
                 .formLogin(AbstractHttpConfigurer::disable)
+                //todo 스웨거 안되는거
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(
                                 "/api/login/**",
