@@ -10,14 +10,14 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Component;
 import org.springframework.util.StringUtils;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.List;
 
-import static com.example.toyauth.app.common.constants.GlobalConstants.ACCESS_TOKEN_REFRESH_URL;
 
+@Component
 @RequiredArgsConstructor
 public class JwtFilter extends OncePerRequestFilter {
 
@@ -29,7 +29,7 @@ public class JwtFilter extends OncePerRequestFilter {
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
 
-        String token = resolveToken(request);
+        String token = tokenProvider.resolveAccessToken(request);
 
         if (StringUtils.hasText(token) && tokenProvider.validateToken(token)) {
             Long userId = tokenProvider.getUserId(token); // JWT에서 userId 추출
@@ -50,28 +50,12 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
 
-    @Override
+   /* @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
         // "/api"가 붙은 엔드포인트를 올바르게 필터링
         return path.matches("^/api/(login|user|oauth2(/.*)?)$");
-    }
-
-
-    // Authorization 헤더에서 JWT 토큰 추출 (Bearer 스키마 사용)
-    private String resolveToken(HttpServletRequest request) {
-        String bearerToken = request.getHeader("Authorization");
-        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
-            return bearerToken.substring(7);
-        }
-        return null;
-    }
-
-
-
-
-
-
+    }*/
 }
 

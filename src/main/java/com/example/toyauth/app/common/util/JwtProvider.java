@@ -4,14 +4,19 @@ import com.example.toyauth.app.auth.domain.MyUserDetails;
 import com.example.toyauth.app.common.dto.JwtDto;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.stereotype.Component;
+import org.springframework.util.StringUtils;
 
 import java.security.Key;
+import java.util.Arrays;
 import java.util.Base64;
 import java.util.Date;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Component
@@ -38,7 +43,17 @@ public class JwtProvider {
     }
 
     public String generateToken(Authentication authentication, Long expirationFromCreated) {
-        Claims claims = generateTokenClaims(authentication);
+        Claims claims = generateTokenClaims((MyUserDetails) authentication.getPrincipal());
+
+        return Jwts.builder()
+                .setClaims(claims)
+                .setExpiration(getTokenExpiresIn(expirationFromCreated))
+                .signWith(key, SignatureAlgorithm.HS256)
+                .compact();
+    }
+
+    public String generateToken(MyUserDetails userDetails, Long expirationFromCreated) {
+        Claims claims = generateTokenClaims(userDetails);
 
         return Jwts.builder()
                 .setClaims(claims)
@@ -48,11 +63,10 @@ public class JwtProvider {
     }
 
 
-    private Claims generateTokenClaims(Authentication authentication) {
-        Claims claims = Jwts.claims().setSubject(authentication.getName());
-        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+    private Claims generateTokenClaims(MyUserDetails userDetails) {
+        Claims claims = Jwts.claims().setSubject(userDetails.getName());
 
-        String authorization = authentication.getAuthorities().stream()
+        String authorization = userDetails.getAuthorities().stream()
                 .map(GrantedAuthority::getAuthority)
                 .collect(Collectors.joining(","));
 
@@ -64,6 +78,7 @@ public class JwtProvider {
 
         return claims;
     }
+
 
     private Date getTokenExpiresIn(long nowToAfterSecond) {
         long now = new Date().getTime();
@@ -122,4 +137,21 @@ public class JwtProvider {
         }
     }
 
+    public String resolveAccessToken(HttpServletRequest request) {
+        String bearerToken = request.getHeader("Authorization");
+        if (StringUtils.hasText(bearerToken) && bearerToken.startsWith("Bearer ")) {
+            return bearerToken.substring(7);
+        }
+        return null;
+    }
+
+    public String resolveRefreshToken(HttpServletRequest request) {
+        if (request.getCookies() == null) return null;
+
+        Optional<Cookie> refreshTokenCookie = Arrays.stream(request.getCookies())
+                .filter(cookie -> "refreshToken".equals(cookie.getName()))
+                .findFirst();
+
+        return refreshTokenCookie.map(Cookie::getValue).orElse(null);
+    }
 }
