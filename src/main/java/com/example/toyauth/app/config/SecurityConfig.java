@@ -35,8 +35,7 @@ public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
     private final OAuth2Service oAuth2Service;
-    private final RedisUserService redisUserService;
-    private final RefreshTokenRepository refreshTokenRepository;
+
     private final JwtFilter jwtFilter;
     private final RefreshJwtFilter refreshJwtFilter;
 
@@ -49,26 +48,11 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable)
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 모드
                 .formLogin(AbstractHttpConfigurer::disable)
-                //todo 스웨거 안되는거
-                .authorizeHttpRequests(auth -> auth
-                        .requestMatchers(
-                                "/api/login/**",
-                                "/api/oauth2/**",
-                                "/api/swagger-ui/**",
-                                "/api/v3/api-docs/**",
-                                "/api/swagger-resources/**",
-                                "/api/swagger-ui.html",
-                                "/api/webjars/**"
-                        ).permitAll()
-                        .anyRequest().authenticated()
-                )
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
                         .successHandler(new LoginSuccessHandler(jwtProvider))
                         .failureHandler(new LoginFailureHandler())
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
                 )
-
-
                 .build();
     }
 

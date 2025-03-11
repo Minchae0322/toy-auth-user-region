@@ -50,12 +50,20 @@ public class JwtFilter extends OncePerRequestFilter {
 
     }
 
-   /* @Override
+    @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
 
-        // "/api"가 붙은 엔드포인트를 올바르게 필터링
-        return path.matches("^/api/(login|user|oauth2(/.*)?)$");
-    }*/
+        // 로그인, 유저, OAuth2 관련 API 및 Swagger 예외 처리
+        return path.startsWith("/api/login")
+                || path.startsWith("/api/user")
+                || path.startsWith("/api/oauth2")
+                || path.startsWith("/api/swagger-ui/")
+                || path.startsWith("/api/v3/api-docs")
+                || path.startsWith("/api/swagger-resources/")
+                || path.startsWith("/api/webjars/");
+    }
+
+
 }
 
