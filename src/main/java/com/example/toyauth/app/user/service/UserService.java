@@ -55,6 +55,15 @@ public class UserService {
         return userRepository.save(user).getId();
     }
 
+    public Long resetPasswordAfterEmailVerification(Long userId, UserPasswordChangeDto passwordChangeDto) {
+        User user = findUserByIdAndActivated(userId);
+
+        UserEncodeDto userEncodeDto = getUserEncodeDto(passwordChangeDto);
+        user.encode(userEncodeDto);
+
+        return userRepository.save(user).getId();
+    }
+
 
     private UserEncodeDto getUserEncodeDto(EncodableDto encodableDto) {
         return UserEncodeDto.builder()

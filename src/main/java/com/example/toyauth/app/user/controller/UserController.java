@@ -9,6 +9,7 @@ import com.example.toyauth.app.user.domain.dto.UserCreateDto;
 import com.example.toyauth.app.user.domain.dto.UserDto;
 import com.example.toyauth.app.user.domain.dto.UserPasswordChangeDto;
 import com.example.toyauth.app.user.domain.dto.UserUpdateDto;
+import com.example.toyauth.app.user.service.EmailVerificationService;
 import com.example.toyauth.app.user.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -21,11 +22,13 @@ import org.springframework.web.bind.annotation.*;
 
 @Tag(name = "UserController", description = "사용자 로그인")
 @RestController
+
 @RequiredArgsConstructor
 @RequestMapping(value = "/user")
 public class UserController {
 
     private final UserService userService;
+    private final EmailVerificationService emailVerificationService;
 
     @PostMapping("")
     @Operation(summary = "사용자 생성",
@@ -59,6 +62,16 @@ public class UserController {
             @RequestBody @Valid UserUpdateDto userUpdateDto) {
 
         return ResponseEntity.ok(userService.updateUser(userId, userUpdateDto));
+    }
+
+    @GetMapping(value = "/email/{userEmail}")
+    @Operation(summary = "유저 이메일 인증코드 발송", tags = "UserController")
+    @CheckUserOwnOrAdmin
+    public ResponseEntity<Void> sendVerificationEmail(
+            @PathVariable String userEmail) {
+        emailVerificationService.sendVerificationCode(userEmail);
+
+        return ResponseEntity.ok().build();
     }
 
 }

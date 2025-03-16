@@ -5,6 +5,7 @@ import com.example.toyauth.app.common.enumuration.Role;
 import com.example.toyauth.app.user.domain.dto.UserEncodeDto;
 import com.example.toyauth.app.user.domain.dto.UserUpdateDto;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
 import lombok.*;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicInsert;
@@ -38,6 +39,11 @@ public class User {
     @Column()
     @Comment("비밀번호 (일반 회원가입 시 사용, OAuth 로그인 시 null 가능)")
     private String password;
+
+    @Column
+    @Email
+    @Comment("사용자 이메일")
+    private String email;
 
     @Column
     @Comment("사용자 닉네임")

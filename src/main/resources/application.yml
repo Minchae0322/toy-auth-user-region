@@ -10,6 +10,20 @@ spring:
   messages:
     basename: messages
 
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: jmcabc1216@gmail.com
+    password: nkzr lnfv uyqi tevc
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+
+
   ## 업로드 파일 설정
   servlet:
     multipart:
@@ -17,6 +31,7 @@ spring:
       max-file-size: 1GB
       max-request-size: 1GB
       file-size-threshold: 2KB
+
 
 springdoc:
   api-docs:
