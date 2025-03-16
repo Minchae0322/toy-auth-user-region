@@ -6,12 +6,14 @@ import com.example.toyauth.app.common.exception.impl.UserErrorCode;
 import com.example.toyauth.app.user.repository.RedisUserRepository;
 import com.example.toyauth.app.user.repository.UserRepository;
 import com.example.toyauth.app.user.domain.User;
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class RedisUserService {
 
     private final RedisUserRepository redisUserRepository;

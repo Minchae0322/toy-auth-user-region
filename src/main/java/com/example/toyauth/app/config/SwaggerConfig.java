@@ -10,17 +10,26 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 @OpenAPIDefinition(
         info = @Info(title = "OAuth2 API", version = "1.0", description = "OAuth2 인증이 포함된 API"),
-        security = @SecurityRequirement(name = "oauth2")
+        security = {
+                @SecurityRequirement(name = "oauth2"),   // OAuth2 로그인 방식
+                @SecurityRequirement(name = "BearerAuth") // Bearer 토큰 방식
+        }
 )
 @SecurityScheme(
         name = "oauth2",
         type = SecuritySchemeType.OAUTH2,
         flows = @io.swagger.v3.oas.annotations.security.OAuthFlows(
                 authorizationCode = @io.swagger.v3.oas.annotations.security.OAuthFlow(
-                        authorizationUrl = "http://localhost:8080/oauth2/authorization/google", // 로그인 URL
+                        authorizationUrl = "http://localhost:8080/oauth2/authorization/google", // OAuth2 로그인 URL
                         tokenUrl = "http://localhost:8080/login/oauth2/code/google"
                 )
         )
+)
+@SecurityScheme(
+        name = "BearerAuth",
+        type = SecuritySchemeType.HTTP,
+        scheme = "bearer",
+        bearerFormat = "JWT"
 )
 public class SwaggerConfig {
 }
