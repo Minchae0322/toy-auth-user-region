@@ -52,7 +52,7 @@ public class User {
     @Comment("계정 활성화 여부")
     private boolean activated = true;
 
-    @Column(unique = true)
+    @Column
     @Enumerated(EnumType.STRING)
     @Comment("OAuth2 제공자 (google, github, naver 등)")
     private Provider provider;
