@@ -40,6 +40,7 @@ public class UserController {
     @GetMapping("/{userId}")
     @Operation(summary = "단일 사용자 조회",
             tags = "UserController")
+    @CheckUserOwnOrAdmin
     public ResponseEntity<UserDto.Get> getUser(@PathVariable Long userId) {
         return ResponseEntity.ok(userService.getUser(userId));
     }
@@ -66,7 +67,6 @@ public class UserController {
 
     @GetMapping(value = "/email/{userEmail}")
     @Operation(summary = "유저 이메일 인증코드 발송", tags = "UserController")
-    @CheckUserOwnOrAdmin
     public ResponseEntity<Void> sendVerificationEmail(
             @PathVariable String userEmail) {
         emailVerificationService.sendVerificationCode(userEmail);

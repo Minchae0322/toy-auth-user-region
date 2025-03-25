@@ -10,6 +10,5 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("hasRole('ADMIN') or #userId == principal.user.id")
 public @interface CheckUserOwnOrAdmin {
 }

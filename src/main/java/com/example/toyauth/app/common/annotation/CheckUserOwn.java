@@ -8,7 +8,6 @@ import java.lang.annotation.Target;
 
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
-@PreAuthorize("#userId == principal.user.id")
 public @interface CheckUserOwn {
 }
 
