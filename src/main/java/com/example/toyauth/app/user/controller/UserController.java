@@ -67,6 +67,7 @@ public class UserController {
 
     @GetMapping(value = "/email/{userEmail}")
     @Operation(summary = "유저 이메일 인증코드 발송", tags = "UserController")
+    @CheckUserOwnOrAdmin
     public ResponseEntity<Void> sendVerificationEmail(
             @PathVariable String userEmail) {
         emailVerificationService.sendVerificationCode(userEmail);

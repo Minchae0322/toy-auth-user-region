@@ -13,7 +13,7 @@ public enum UserErrorCode implements ErrorCode {
     USER_NOT_EXIST(HttpStatus.BAD_REQUEST, "user not exist"),
     PASSWORD_NOT_MATCHES(HttpStatus.BAD_REQUEST, "password not matches"),
     LOGIN_FAILED(HttpStatus.BAD_REQUEST, "login failed, user info invalid"),
-    UNAUTHORIZED(HttpStatus.UNAUTHORIZED, "user has not been authorized"),
+    UNAUTHORIZED(HttpStatus.BAD_REQUEST, "user have not permission"),
     ;
 
     private final HttpStatus httpStatus;
