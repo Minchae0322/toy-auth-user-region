@@ -79,6 +79,9 @@ spring:
       hibernate:
         format_sql: true
 
+value:
+  server:
+    url: 3.35.210.106
 
 file:
   upload:
