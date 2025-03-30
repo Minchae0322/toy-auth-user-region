@@ -33,7 +33,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request,
                                     HttpServletResponse response,
                                     FilterChain filterChain) throws ServletException, IOException {
-
+        System.out.println(">>>> JwtRefreshFilter 진입, URI: " + request.getRequestURI());
         String accessToken = jwtProvider.resolveAccessToken(request);
 
         if (accessToken != null && jwtProvider.validateToken(accessToken)) {
@@ -76,7 +76,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
     @Override
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
-
+        System.out.println(">>>> shouldNotFilter path: " + path);
         // 로그인, 유저, OAuth2 관련 API 및 Swagger 예외 처리
         return path.startsWith("/api/login")
                 || path.startsWith("/api/oauth2")
