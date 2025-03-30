@@ -67,7 +67,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
             if (optionalToken.isEmpty()) {
                 response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
             }
-
+            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         }
     }
 
