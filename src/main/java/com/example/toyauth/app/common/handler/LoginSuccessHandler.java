@@ -2,11 +2,13 @@ package com.example.toyauth.app.common.handler;
 
 import com.example.toyauth.app.common.dto.JwtDto;
 import com.example.toyauth.app.common.util.JwtProvider;
+import com.example.toyauth.app.config.Oauth2Properties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseCookie;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.web.authentication.SimpleUrlAuthenticationSuccessHandler;
@@ -31,8 +33,11 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
 
+    private final Oauth2Properties oauth2Properties;
+
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
+                                        Authentication authentication) throws IOException {
         JwtDto jwtDto = jwtProvider.generateAccessAndRefreshTokens(authentication);
 
         String accessToken = jwtDto.getAccessToken();
@@ -42,20 +47,18 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .httpOnly(true)
                 .secure(true)
                 .path("/")
-                .maxAge(REFRESH_TOKEN_EXPIRATION) // 7일 유지
+                .maxAge(REFRESH_TOKEN_EXPIRATION)
                 .build();
-
-        response.setStatus(HttpServletResponse.SC_OK);
-        response.setContentType(APPLICATION_JSON_VALUE);
-        response.setHeader("Authorization", "Bearer " + accessToken);
         response.addHeader("Set-Cookie", refreshTokenCookie.toString());
 
+        URI uri = URI.create(oauth2Properties.getFrontendCallbackUrl());
+        String redirectUrl = UriComponentsBuilder
+                .fromUri(uri)
+                .queryParam("token", accessToken)
+                .build()
+                .toUriString();
 
-        Map<String, String> responseBody = new HashMap<>();
-        responseBody.put("accessToken", accessToken);
-
-        response.getWriter().write(new ObjectMapper().writeValueAsString(responseBody));
-        response.getWriter().flush();
+        getRedirectStrategy().sendRedirect(request, response, redirectUrl);
     }
 
     /*private void changeUserLoggedIn(Authentication authentication) {

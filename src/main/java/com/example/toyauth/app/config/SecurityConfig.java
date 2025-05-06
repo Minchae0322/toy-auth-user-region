@@ -34,6 +34,7 @@ import static com.example.toyauth.app.common.constants.GlobalConstants.*;
 public class SecurityConfig {
 
     private final JwtProvider jwtProvider;
+    private final Oauth2Properties oauth2Properties;
     private final OAuth2Service oAuth2Service;
 
     private final JwtFilter jwtFilter;
@@ -49,7 +50,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 모드
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
-                        .successHandler(new LoginSuccessHandler(jwtProvider))
+                        .successHandler(new LoginSuccessHandler(jwtProvider, oauth2Properties))
                         .failureHandler(new LoginFailureHandler())
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
                 )

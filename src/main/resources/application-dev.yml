@@ -89,3 +89,7 @@ file:
 
 jwt:
   secret: ${JWT_SECRET:default-secret-key}  # 기본값 설정
+
+app:
+  oauth2:
+    frontend-callback-url: http://localhost:5173/oauth/callback # 프론트 jwt 콜백 url
