@@ -3,9 +3,11 @@ server:
   servlet:
     context-path: /api
 
+
+
 spring:
   profiles:
-    active: dev # 기본 활성화 프로필 (dev)
+    active: local # 기본 활성화 프로필 (dev)
 
   mail:
     host: ${MAIL_HOST}
