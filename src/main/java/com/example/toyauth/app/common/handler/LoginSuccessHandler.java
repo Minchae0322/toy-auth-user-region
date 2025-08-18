@@ -1,11 +1,16 @@
 package com.example.toyauth.app.common.handler;
 
+import com.example.toyauth.app.auth.domain.MyUserDetails;
+import com.example.toyauth.app.auth.domain.RefreshToken;
+import com.example.toyauth.app.auth.repository.RefreshTokenRepository;
 import com.example.toyauth.app.common.dto.JwtDto;
 import com.example.toyauth.app.common.util.JwtProvider;
 import com.example.toyauth.app.config.Oauth2Properties;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import java.time.Instant;
+import java.time.LocalDateTime;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -32,8 +37,8 @@ import static org.springframework.util.MimeTypeUtils.APPLICATION_JSON_VALUE;
 public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
     private final JwtProvider jwtProvider;
-
     private final Oauth2Properties oauth2Properties;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Override
     public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response,
@@ -42,6 +47,9 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
 
         String accessToken = jwtDto.getAccessToken();
         String refreshToken = jwtDto.getRefreshToken();
+
+        RefreshToken refreshTokenEntity = createRefreshTokenEntity(authentication, refreshToken);
+        refreshTokenRepository.save(refreshTokenEntity);
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
@@ -59,6 +67,21 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
                 .toUriString();
 
         getRedirectStrategy().sendRedirect(request, response, redirectUrl);
+    }
+
+
+    private RefreshToken createRefreshTokenEntity(Authentication authentication, String refreshToken) {
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+
+        return RefreshToken.builder()
+            .userId(userDetails.getUser().getId())
+            .token(refreshToken)
+            .expiryDate(getTokenExpiresInAsInstant(REFRESH_TOKEN_EXPIRATION))
+            .build();
+    }
+
+    private Instant getTokenExpiresInAsInstant(long nowToAfterMillis) {
+        return Instant.now().plusMillis(nowToAfterMillis);
     }
 
     /*private void changeUserLoggedIn(Authentication authentication) {

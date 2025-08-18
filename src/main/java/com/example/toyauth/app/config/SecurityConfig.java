@@ -39,6 +39,7 @@ public class SecurityConfig {
 
     private final JwtFilter jwtFilter;
     private final RefreshJwtFilter refreshJwtFilter;
+    private final RefreshTokenRepository refreshTokenRepository;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -50,7 +51,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS)) // Stateless 모드
                 .formLogin(AbstractHttpConfigurer::disable)
                 .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
-                        .successHandler(new LoginSuccessHandler(jwtProvider, oauth2Properties))
+                        .successHandler(new LoginSuccessHandler(jwtProvider, oauth2Properties, refreshTokenRepository))
                         .failureHandler(new LoginFailureHandler())
                         .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
                 )
