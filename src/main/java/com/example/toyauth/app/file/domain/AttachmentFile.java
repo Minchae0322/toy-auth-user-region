@@ -1,4 +1,4 @@
-package com.example.toyauth.app.file;
+package com.example.toyauth.app.file.domain;
 
 import com.example.toyauth.app.common.enumuration.FileCode;
 import jakarta.persistence.*;
