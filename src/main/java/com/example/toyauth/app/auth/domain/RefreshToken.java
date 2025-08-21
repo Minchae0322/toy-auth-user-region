@@ -28,4 +28,10 @@ public class RefreshToken {
     public boolean isExpired() {
         return Instant.now().isAfter(this.expiryDate);
     }
+
+    public void renew(String refreshToken, Instant expiryDate) {
+        this.token = refreshToken;
+        this.expiryDate = expiryDate;
+
+    }
 }

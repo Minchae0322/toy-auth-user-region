@@ -48,8 +48,17 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
         String accessToken = jwtDto.getAccessToken();
         String refreshToken = jwtDto.getRefreshToken();
 
-        RefreshToken refreshTokenEntity = createRefreshTokenEntity(authentication, refreshToken);
-        refreshTokenRepository.save(refreshTokenEntity);
+        MyUserDetails userDetails = (MyUserDetails) authentication.getPrincipal();
+
+        refreshTokenRepository.findByUserId(userDetails.getUser().getId()).ifPresentOrElse(
+            existRefreshToken -> existRefreshToken.renew(refreshToken,
+                getTokenExpiresInAsInstant(REFRESH_TOKEN_EXPIRATION))
+
+            , () -> {
+                RefreshToken refreshTokenEntity = createRefreshTokenEntity(authentication,
+                    refreshToken);
+                refreshTokenRepository.save(refreshTokenEntity);
+            });
 
         ResponseCookie refreshTokenCookie = ResponseCookie.from("refreshToken", refreshToken)
                 .httpOnly(true)
@@ -80,7 +89,7 @@ public class LoginSuccessHandler extends SimpleUrlAuthenticationSuccessHandler {
             .build();
     }
 
-    private Instant getTokenExpiresInAsInstant(long nowToAfterMillis) {
+    public static Instant getTokenExpiresInAsInstant(long nowToAfterMillis) {
         return Instant.now().plusMillis(nowToAfterMillis);
     }
 
