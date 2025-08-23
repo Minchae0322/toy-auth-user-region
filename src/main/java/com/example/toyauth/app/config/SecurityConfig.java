@@ -7,6 +7,7 @@ import com.example.toyauth.app.common.filter.JwtFilter;
 import com.example.toyauth.app.common.filter.RefreshJwtFilter;
 import com.example.toyauth.app.common.handler.LoginFailureHandler;
 import com.example.toyauth.app.common.handler.LoginSuccessHandler;
+import com.example.toyauth.app.common.handler.LogoutSuccessHandler;
 import com.example.toyauth.app.common.util.JwtProvider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
@@ -34,14 +35,13 @@ import static com.example.toyauth.app.common.constants.GlobalConstants.*;
 @RequiredArgsConstructor
 public class SecurityConfig {
 
-    private final JwtProvider jwtProvider;
-    private final Oauth2Properties oauth2Properties;
     private final OAuth2Service oAuth2Service;
-
     private final JwtFilter jwtFilter;
     private final RefreshJwtFilter refreshJwtFilter;
-    private final RefreshTokenRepository refreshTokenRepository;
     private final ExternalAuthenticationFilter externalAuthenticationFilter;
+    private final LoginSuccessHandler loginSuccessHandler;
+    private final LogoutSuccessHandler logoutSuccessHandler;
+    private final LoginFailureHandler loginFailureHandler;
 
     /**
      * 내부 API용 SecurityFilterChain (API Key 인증)
@@ -76,9 +76,16 @@ public class SecurityConfig {
             .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .formLogin(AbstractHttpConfigurer::disable)
             .oauth2Login(httpSecurityOAuth2LoginConfigurer -> httpSecurityOAuth2LoginConfigurer
-                .successHandler(new LoginSuccessHandler(jwtProvider, oauth2Properties, refreshTokenRepository))
-                .failureHandler(new LoginFailureHandler())
+                .successHandler(loginSuccessHandler)
+                .failureHandler(loginFailureHandler)
                 .userInfoEndpoint(userInfoEndpointConfig -> userInfoEndpointConfig.userService(oAuth2Service))
+            )
+            .logout(logout -> logout
+                .logoutUrl("/api/auth/logout")
+                .logoutSuccessHandler(logoutSuccessHandler)
+                .deleteCookies("JSESSIONID")
+                .invalidateHttpSession(true)                      // 세션 무효화
+                .clearAuthentication(true)                        // 인증 정보 클리어
             )
             .build();
     }
