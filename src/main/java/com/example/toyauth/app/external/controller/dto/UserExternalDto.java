@@ -22,7 +22,7 @@ public class UserExternalDto {
   private AttachmentFileDto profileImageFile;
 
   @Schema(description = "유저 권한")
-  private Role role;
+  private String role;
 
   @Schema(description = "로그인 플랫폼")
   private Provider provider;
@@ -36,7 +36,7 @@ public class UserExternalDto {
         .userId(user.getId())
         .nickname(user.getNickname())
         .profileImageFile(profileImageFileDto)
-        .role(user.getRole())
+        .role(user.getRole().getValue())
         .activated(user.isActivated())
         .provider(user.getProvider())
         .build();
