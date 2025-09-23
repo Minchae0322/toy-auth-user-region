@@ -1,7 +1,16 @@
 package com.example.toyauth.app.file.domain;
 
+import com.example.toyauth.app.base.BaseEntity;
 import com.example.toyauth.app.common.enumuration.FileCode;
-import jakarta.persistence.*;
+import com.example.toyauth.app.common.enumuration.StorageType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,7 +27,7 @@ import org.hibernate.annotations.DynamicUpdate;
 @NoArgsConstructor
 @Entity
 @Table(name = "tb_attch_file")
-public class AttachmentFile {
+public class AttachmentFile extends BaseEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,4 +59,8 @@ public class AttachmentFile {
     @Comment("파일 설명")
     private String fileExplain;
 
+    @Enumerated(EnumType.STRING)
+    @Column(name = "storage_type", length = 20)
+    @Comment("저장소 타입 (LOCAL, S3 등)")
+    private StorageType storageType;
 }

@@ -1,6 +1,7 @@
 package com.example.toyauth.app.file.domain.dto;
 
 import com.example.toyauth.app.common.enumuration.FileCode;
+import com.example.toyauth.app.common.enumuration.StorageType;
 import com.example.toyauth.app.file.domain.AttachmentFile;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
@@ -31,6 +32,7 @@ public class AttachmentFileDto {
   @Schema(description = "파일 설명")
   private String fileExplain;
 
+  private StorageType storageType;
 
   public static AttachmentFileDto from(AttachmentFile attachmentFile) {
     return AttachmentFileDto.builder()
@@ -41,6 +43,7 @@ public class AttachmentFileDto {
         .fileUrl(attachmentFile.getFileUrl())
         .fileSize(attachmentFile.getFileSize())
         .fileExplain(attachmentFile.getFileExplain())
+        .storageType(attachmentFile.getStorageType())
         .build();
   }
 }
