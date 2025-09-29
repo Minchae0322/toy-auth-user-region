@@ -1,8 +1,8 @@
 package com.example.toyauth.app.file.controller;
 
+import com.example.toyauth.app.common.enumuration.FileCode;
 import com.example.toyauth.app.file.domain.dto.AttachmentFileDto;
 import com.example.toyauth.app.file.service.FileService;
-import com.nimbusds.jose.util.Resource;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -11,8 +11,10 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
-import java.io.IOException;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import lombok.RequiredArgsConstructor;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -52,7 +54,7 @@ public class FileController {
       @RequestParam("file") MultipartFile file,
 
       @Parameter(description = "파일 코드 (PRODUCT_IMAGE, PROFILE_IMAGE 등)")
-      @RequestParam(value = "fileCode", required = false) String fileCode,
+      @RequestParam(value = "fileCode", required = false) FileCode fileCode,
 
       @Parameter(description = "파일 설명")
       @RequestParam(value = "fileExplain", required = false) String fileExplain
@@ -77,33 +79,47 @@ public class FileController {
       @PathVariable Long fileId,
       HttpServletRequest request
   ) {
+    // Service에서 예외 발생 시 GlobalExceptionHandler가 처리
+    Resource resource = fileService.loadFileAsResource(fileId);
+    AttachmentFileDto fileInfo = fileService.getFileInfo(fileId);
+
+    // Content-Type 결정
+    String contentType = determineContentType(resource, request);
+
+    // 파일명 인코딩 (한글 파일명 지원)
+    String encodedFileName = encodeFileName(fileInfo.getOrgFileNm());
+
+    return ResponseEntity.ok()
+        .contentType(MediaType.parseMediaType(contentType))
+        .header(HttpHeaders.CONTENT_DISPOSITION,
+            "attachment; filename=\"" + encodedFileName + "\"")
+        .body(resource);
+  }
+
+  /**
+   * Content-Type 결정
+   */
+  private String determineContentType(Resource resource, HttpServletRequest request) {
+    String contentType = null;
+
     try {
-      Resource resource = fileService.loadFileAsResource(fileId);
-      AttachmentFileDto fileInfo = fileService.getFileInfo(fileId);
-
-      // 파일의 Content-Type 결정
-      String contentType = null;
-      try {
-        contentType = request.getServletContext().getMimeType(resource.getFile().getAbsolutePath());
-      } catch (IOException ex) {
-        // Content-Type을 결정할 수 없는 경우 기본값 사용
+      String filename = resource.getFilename();
+      if (filename != null) {
+        contentType = request.getServletContext().getMimeType(filename);
       }
-
-      if (contentType == null) {
-        contentType = "application/octet-stream";
-      }
-
-      return ResponseEntity.ok()
-          .contentType(MediaType.parseMediaType(contentType))
-          .header(HttpHeaders.CONTENT_DISPOSITION,
-              "attachment; filename=\"" + fileInfo.getOrgFileNm() + "\"")
-          .body(resource);
-
-    } catch (IllegalArgumentException e) {
-      return ResponseEntity.notFound().build();
-    } catch (Exception e) {
-      return ResponseEntity.internalServerError().build();
+    } catch (Exception ex) {
+      // Content-Type을 결정할 수 없는 경우 무시
     }
+
+    return contentType != null ? contentType : "application/octet-stream";
+  }
+
+  /**
+   * 파일명 인코딩 (한글 파일명 지원)
+   */
+  private String encodeFileName(String fileName) {
+    return URLEncoder.encode(fileName, StandardCharsets.UTF_8)
+        .replaceAll("\\+", "%20");
   }
 
 }

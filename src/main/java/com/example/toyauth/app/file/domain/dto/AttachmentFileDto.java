@@ -32,6 +32,9 @@ public class AttachmentFileDto {
   @Schema(description = "파일 설명")
   private String fileExplain;
 
+  @Schema(description = "파일 확장자")
+  private String fileExt;
+
   private StorageType storageType;
 
   public static AttachmentFileDto from(AttachmentFile attachmentFile) {
@@ -42,8 +45,10 @@ public class AttachmentFileDto {
         .storeFileNm(attachmentFile.getStoreFileNm())
         .fileUrl(attachmentFile.getFileUrl())
         .fileSize(attachmentFile.getFileSize())
+        .fileExt(attachmentFile.getFileExt())
         .fileExplain(attachmentFile.getFileExplain())
         .storageType(attachmentFile.getStorageType())
         .build();
   }
+  
 }

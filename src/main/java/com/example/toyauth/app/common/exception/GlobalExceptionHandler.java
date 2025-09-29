@@ -16,6 +16,16 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
         return handleExceptionInternal(errorCode);
     }
 
+    /**
+     * 파일 관련 예외 처리
+     */
+    @ExceptionHandler(FileException.class)
+    public ResponseEntity<Object> handleFileException(FileException e) {
+        log.warn("handleFileException", e);
+        ErrorCode errorCode = e.getErrorCode();
+        return handleExceptionInternal(errorCode);
+    }
+
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<Object> handleIllegalArgument(IllegalArgumentException e) {
         log.warn("handleIllegalArgument", e);

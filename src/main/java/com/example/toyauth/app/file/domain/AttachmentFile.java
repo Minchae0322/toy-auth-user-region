@@ -12,6 +12,7 @@ import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.experimental.SuperBuilder;
@@ -20,7 +21,7 @@ import org.hibernate.annotations.DynamicInsert;
 import org.hibernate.annotations.DynamicUpdate;
 
 @Getter
-@SuperBuilder
+@Builder
 @DynamicInsert
 @DynamicUpdate
 @AllArgsConstructor
@@ -54,6 +55,9 @@ public class AttachmentFile extends BaseEntity {
 
     @Comment("파일 사이즈")
     private Long fileSize;
+
+    @Comment("파일 확장자")
+    private String fileExt;
 
     @Column(name = "file_explain", length = 2000)
     @Comment("파일 설명")
