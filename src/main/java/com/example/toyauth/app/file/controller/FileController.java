@@ -1,5 +1,8 @@
 package com.example.toyauth.app.file.controller;
 
+import static com.example.toyauth.app.common.util.FileUtil.determineContentType;
+import static com.example.toyauth.app.common.util.FileUtil.encodeFileName;
+
 import com.example.toyauth.app.common.enumuration.FileCode;
 import com.example.toyauth.app.file.domain.dto.AttachmentFileDto;
 import com.example.toyauth.app.file.service.FileService;
@@ -96,30 +99,5 @@ public class FileController {
         .body(resource);
   }
 
-  /**
-   * Content-Type 결정
-   */
-  private String determineContentType(Resource resource, HttpServletRequest request) {
-    String contentType = null;
-
-    try {
-      String filename = resource.getFilename();
-      if (filename != null) {
-        contentType = request.getServletContext().getMimeType(filename);
-      }
-    } catch (Exception ex) {
-      // Content-Type을 결정할 수 없는 경우 무시
-    }
-
-    return contentType != null ? contentType : "application/octet-stream";
-  }
-
-  /**
-   * 파일명 인코딩 (한글 파일명 지원)
-   */
-  private String encodeFileName(String fileName) {
-    return URLEncoder.encode(fileName, StandardCharsets.UTF_8)
-        .replaceAll("\\+", "%20");
-  }
 
 }
