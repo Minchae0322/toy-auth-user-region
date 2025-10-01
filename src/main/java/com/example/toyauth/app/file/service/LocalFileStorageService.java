@@ -1,5 +1,7 @@
 package com.example.toyauth.app.file.service;
 
+import com.example.toyauth.app.common.exception.FileException;
+import com.example.toyauth.app.common.exception.impl.FileErrorCode;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -18,28 +20,33 @@ import org.springframework.web.multipart.MultipartFile;
 @Component("localFileStorageService")
 public class LocalFileStorageService implements FileStorageService {
 
-  @Value("${file.upload.path:/uploads}")
+  @Value("${file.upload.path:uploads}")
   private String uploadPath;
 
-  @Value("${server.domain:http://localhost:8080}")
+  @Value("${server.domain:http://localhost:8081}")
   private String serverDomain;
 
   @Override
   public String store(MultipartFile file, String storeFileName) {
     try {
+      // 날짜 폴더 경로 생성
+      String dateFolder = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
       Path uploadDir = createUploadPath();
       Path targetPath = uploadDir.resolve(storeFileName);
 
-      // 파일 저장
+      Path baseUploadPath = Paths.get(System.getProperty("user.dir"), uploadPath).normalize();
+      if (!targetPath.normalize().startsWith(baseUploadPath)) {
+        throw new FileException(FileErrorCode.INVALID_FILE_PATH);
+      }
+
       Files.copy(file.getInputStream(), targetPath, StandardCopyOption.REPLACE_EXISTING);
 
-      // 파일 URL 반환
-      String dateFolder = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-      return String.format("%s/api/files/download/%s", serverDomain, storeFileName);
+      return String.format("%s/%s/%s/%s",
+          serverDomain, uploadPath, dateFolder, storeFileName);
 
     } catch (IOException e) {
       log.error("파일 저장 실패: {}", storeFileName, e);
-      throw new RuntimeException("파일 저장에 실패했습니다.", e);
+      throw new FileException(FileErrorCode.FILE_STORAGE_ERROR);
     }
   }
 
@@ -72,11 +79,12 @@ public class LocalFileStorageService implements FileStorageService {
   }
 
   /**
-   * 업로드 경로 생성
+   * 업로드 경로 생성 (user.dir 기준)
    */
   private Path createUploadPath() throws IOException {
     String dateFolder = LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"));
-    Path uploadDir = Paths.get(uploadPath, dateFolder);
+    String userDir = System.getProperty("user.dir");
+    Path uploadDir = Paths.get(userDir, uploadPath, dateFolder);
 
     if (!Files.exists(uploadDir)) {
       Files.createDirectories(uploadDir);

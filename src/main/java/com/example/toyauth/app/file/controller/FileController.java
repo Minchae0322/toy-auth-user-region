@@ -32,26 +32,13 @@ import org.springframework.web.multipart.MultipartFile;
 @Tag(name = "FileController", description = "첨부파일 등록")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/files")
+@RequestMapping("/files")
 public class FileController {
 
   private final FileService fileService;
 
-  @Operation(
-      summary = "파일 업로드",
-      description = "파일을 업로드하고 파일 정보를 반환합니다."
-  )
-  @ApiResponses({
-      @ApiResponse(
-          responseCode = "200",
-          description = "파일 업로드 성공",
-          content = @Content(schema = @Schema(implementation = AttachmentFileDto.class))
-      ),
-      @ApiResponse(responseCode = "400", description = "잘못된 요청"),
-      @ApiResponse(responseCode = "413", description = "파일 크기 초과"),
-      @ApiResponse(responseCode = "415", description = "지원하지 않는 파일 형식")
-  })
-  @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+  @Operation(summary = "파일 업로드", description = "파일을 업로드하고 파일 정보를 반환합니다.")
+  @PostMapping(value = "/upload", consumes = MediaType.MULTIPART_FORM_DATA_VALUE, produces = MediaType.APPLICATION_JSON_VALUE)
   public ResponseEntity<AttachmentFileDto> uploadFile(
       @Parameter(description = "업로드할 파일", required = true)
       @RequestParam("file") MultipartFile file,
@@ -67,15 +54,7 @@ public class FileController {
     return ResponseEntity.ok(uploadedFile);
   }
 
-  @Operation(
-      summary = "파일 다운로드",
-      description = "파일 ID로 파일을 다운로드합니다."
-  )
-  @ApiResponses({
-      @ApiResponse(responseCode = "200", description = "파일 다운로드 성공"),
-      @ApiResponse(responseCode = "404", description = "파일을 찾을 수 없음"),
-      @ApiResponse(responseCode = "500", description = "파일 다운로드 중 오류 발생")
-  })
+  @Operation(summary = "파일 다운로드", description = "파일 ID로 파일을 다운로드합니다.")
   @GetMapping("/download/{fileId}")
   public ResponseEntity<Resource> downloadFile(
       @Parameter(description = "다운로드할 파일 ID", required = true)

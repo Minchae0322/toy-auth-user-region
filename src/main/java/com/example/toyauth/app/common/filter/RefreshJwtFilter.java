@@ -72,6 +72,7 @@ public class RefreshJwtFilter extends OncePerRequestFilter {
 
         // 로그인, 유저, OAuth2 관련 API 및 Swagger 예외 처리
         return path.startsWith("/api/login")
+                || path.startsWith("/api/uploads")
                 || path.startsWith("/api/oauth2")
                 || path.startsWith("/api/external/")
                 || path.startsWith("/api/swagger-ui/")
