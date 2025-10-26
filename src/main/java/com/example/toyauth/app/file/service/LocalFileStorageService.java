@@ -23,7 +23,7 @@ public class LocalFileStorageService implements FileStorageService {
   @Value("${file.upload.path:uploads}")
   private String uploadPath;
 
-  @Value("${server.domain:http://localhost:8081}")
+  @Value("${server.domain:http://localhost:8081/api}")
   private String serverDomain;
 
   @Override

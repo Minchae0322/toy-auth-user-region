@@ -12,6 +12,8 @@ import java.util.Arrays;
 public enum FileCode {
 
     PRODUCT("PRODUCT", "제품 업로드 파일"),
+    SALE("SALE", "판매 게시글 이미지"),
+    FEED("FEED","피드 업로드 이미지")
     ;
 
     private String title;
